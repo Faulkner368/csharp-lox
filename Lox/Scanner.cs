@@ -74,6 +74,7 @@ namespace Lox
         {
             while (!IsAtEnd())
             {
+                _start = _current;
                 ScanToken();
             }
 
