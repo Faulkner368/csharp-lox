@@ -5,7 +5,7 @@ namespace Lox
     /// <summary>
     /// A scanner for the Lox programming language
     /// </summary>
-    internal class Scanner
+    public class Scanner
     {
         /// <summary>
         /// The source code to scan

@@ -1,3 +1,5 @@
 .vs/*
 Lox/bin/*
 Lox/obj/*
+Tools/bin/*
+Tools/obj/*

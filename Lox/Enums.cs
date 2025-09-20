@@ -1,6 +1,9 @@
 ﻿namespace Lox
 {
-    internal enum TokenType
+    /// <summary>
+    /// The different types of tokens that can be produced by the scanner
+    /// </summary>
+    public enum TokenType
     {
         // Single-character tokens.
         LEFT_PAREN,

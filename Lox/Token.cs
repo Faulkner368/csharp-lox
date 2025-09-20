@@ -3,7 +3,7 @@
     /// <summary>
     /// A token produced by the scanner
     /// </summary>
-    internal class Token
+    public class Token
     {
         /// <summary>
         /// The type of the token
