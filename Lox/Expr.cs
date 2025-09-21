@@ -128,9 +128,9 @@ namespace Lox
     /// </summary>
     public class Literal : Expr
     {
-        public object Value;
+        public object? Value;
 
-        public Literal(object value)        {
+        public Literal(object? value)        {
             Value = value;
         }
 

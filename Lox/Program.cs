@@ -1,5 +1,4 @@
-﻿
-using System.Text;
+﻿using System.Text;
 
 namespace Lox
 {
@@ -8,6 +7,9 @@ namespace Lox
     /// </summary>
     class Program
     {
+        /// <summary>
+        /// Whether or not an error has occurred
+        /// </summary>
         private static bool _hadError = false;
 
         /// <summary>
@@ -76,11 +78,15 @@ namespace Lox
         {
             var scanner = new Scanner(source);
             var tokens = scanner.ScanTokens();
+            var parser = new Parser(tokens);
+            var expression = parser.Parse();
 
-            foreach (var token in tokens)
+            if (_hadError || expression == null)
             {
-                Console.WriteLine(token);
+                return;
             }
+
+            Console.WriteLine(new AstPrinter().Print(expression));
         }
 
         /// <summary>
@@ -91,6 +97,23 @@ namespace Lox
         public static void Error(int line, string message)
         {
             Report(line, "", message);
+        }
+
+        /// <summary>
+        /// Reports an error at the given token with the given message
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="message"></param>
+        public static void Error(Token token, string message)
+        {
+            if (token.Type == TokenType.EOF)
+            {
+                Report(token.Line, " at end", message);
+            }
+            else
+            {
+                Report(token.Line, $" at '{token.Lexeme}'", message);
+            }
         }
 
         /// <summary>

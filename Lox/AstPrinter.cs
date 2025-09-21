@@ -1,4 +1,6 @@
-﻿namespace Lox
+﻿using System.Text;
+
+namespace Lox
 {
     /// <summary>
     /// Prints the AST in a readable format
@@ -16,7 +18,7 @@
         }
 
         /// <summary>
-        ///
+        /// Visits a binary expression
         /// </summary>
         /// <param name="expr"></param>
         /// <returns></returns>
@@ -26,7 +28,7 @@
         }
 
         /// <summary>
-        /// 
+        /// Visits a grouping expression
         /// </summary>
         /// <param name="expr"></param>
         /// <returns></returns>
@@ -36,7 +38,7 @@
         }
 
         /// <summary>
-        /// 
+        /// Visits a literal expression
         /// </summary>
         /// <param name="expr"></param>
         /// <returns></returns>
@@ -47,7 +49,7 @@
         }
 
         /// <summary>
-        /// 
+        /// Visits a unary expression
         /// </summary>
         /// <param name="expr"></param>
         /// <returns></returns>
@@ -64,13 +66,15 @@
         /// <returns></returns>
         private string Parenthesise(string name, params Expr[] exprs)
         {
-            var builder = new System.Text.StringBuilder();
+            var builder = new StringBuilder();
             builder.Append("(").Append(name);
+
             foreach (var expr in exprs)
             {
                 builder.Append(" ");
                 builder.Append(expr.Accept(this));
             }
+
             builder.Append(")");
             return builder.ToString();
         }
