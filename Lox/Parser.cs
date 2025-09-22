@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using static Lox.TokenType;
+﻿using static Lox.TokenType;
 
 namespace Lox
 {
@@ -8,11 +7,6 @@ namespace Lox
     /// </summary>
     public class Parser
     {
-        /// <summary>
-        /// An exception that indicates a parse error occurred.
-        /// </summary>
-        private class ParseError : Exception { }
-
         /// <summary>
         /// Initialises a new instance of the <see cref="Parser"/> class.
         /// </summary>

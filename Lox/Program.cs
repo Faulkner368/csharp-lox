@@ -8,9 +8,19 @@ namespace Lox
     class Program
     {
         /// <summary>
+        /// The interpreter instance
+        /// </summary>
+        private static readonly Interpreter _interpreter = new Interpreter();
+
+        /// <summary>
         /// Whether or not an error has occurred
         /// </summary>
         private static bool _hadError = false;
+
+        /// <summary>
+        /// Whether or not a runtime error has occurred
+        /// </summary>
+        private static bool _hadRuntimeError = false;
 
         /// <summary>
         /// Entry point to csLox interpreter
@@ -45,6 +55,11 @@ namespace Lox
             if (_hadError)
             {
                 Environment.Exit(65);
+            }
+
+            if (_hadRuntimeError)
+            {
+                Environment.Exit(70);
             }
         }
 
@@ -86,7 +101,7 @@ namespace Lox
                 return;
             }
 
-            Console.WriteLine(new AstPrinter().Print(expression));
+            _interpreter.Interpret(expression);
         }
 
         /// <summary>
@@ -126,6 +141,16 @@ namespace Lox
         {
             Console.Error.WriteLine($"[line {line}] Error{where}: {message}");
             _hadError = true;
+        }
+
+        /// <summary>
+        /// Reports a runtime error
+        /// </summary>
+        /// <param name="error"></param>
+        public static void RuntimeError(RuntimeError error)
+        {
+            Console.Error.WriteLine($"{error.Message}\n[line {error.Token.Line}]");
+            _hadRuntimeError = true;
         }
     }
 }
