@@ -1,4 +1,5 @@
-﻿using static Lox.TokenType;
+﻿using System.Xml.Linq;
+using static Lox.TokenType;
 
 namespace Lox
 {
@@ -26,16 +27,16 @@ namespace Lox
         /// Parses the tokens and returns the resulting expression.
         /// </summary>
         /// <returns></returns>
-        public Expr? Parse()
+        public List<Stmt> Parse()
         {
-            try
+            var statements = new List<Stmt>();
+
+            while(!IsAtEnd())
             {
-                return Expression();
+                statements.Add(Declaration());
             }
-            catch (ParseError)
-            {
-                return null;
-            }
+
+            return statements;
         }
 
         /// <summary>
@@ -45,6 +46,86 @@ namespace Lox
         private Expr Expression()
         {
             return Equality();
+        }
+
+        /// <summary>
+        /// Parses a declaration.
+        /// </summary>
+        /// <returns></returns>
+        private Stmt Declaration()
+        {
+            try
+            {
+                if (Match(VAR))
+                {
+                    return VarDeclaration();
+                }
+
+                return Statement();
+            }
+            catch (ParseError)
+            {
+                Synchronise();
+
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Parses a print statement.
+        /// </summary>
+        /// <returns></returns>
+        private Stmt Statement()
+        {
+            if (Match(PRINT))
+            {
+                return PrintStatement();
+            }
+
+            return ExpressionStatement();
+        }
+
+        /// <summary>
+        /// Parses a print statement.
+        /// </summary>
+        /// <returns></returns>
+        private Stmt PrintStatement()
+        {
+            var value = Expression();
+            Consume(SEMICOLON, "Expect ';' after value.");
+            
+            return new Print(value);
+        }
+
+        /// <summary>
+        /// Parses a variable declaration.
+        /// </summary>
+        /// <returns></returns>
+        private Stmt VarDeclaration()
+        {
+            Token name = Consume(IDENTIFIER, "Expect variable name.");
+
+            Expr initializer = null;
+            if (Match(EQUAL))
+            {
+                initializer = Expression();
+            }
+
+            Consume(SEMICOLON, "Expect ';' after variable declaration.");
+            
+            return new Var(name, initializer);
+        }
+
+        /// <summary>
+        /// Parses an expression statement.
+        /// </summary>
+        /// <returns></returns>
+        private Stmt ExpressionStatement()
+        {
+            var expr = Expression();
+            Consume(SEMICOLON, "Expect ';' after expression.");
+
+            return new Expression(expr);
         }
 
         /// <summary>
@@ -235,6 +316,11 @@ namespace Lox
             {
                 return new Literal(Previous().Literal);
             }
+
+            if (Match(IDENTIFIER))
+            {
+                return new Variable(Previous());
+            }   
 
             if (Match(LEFT_PAREN))
             {

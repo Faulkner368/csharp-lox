@@ -59,6 +59,16 @@ namespace Lox
         }
 
         /// <summary>
+        /// Visits a variable expression
+        /// </summary>
+        /// <param name="expr"></param>
+        /// <returns></returns>
+        public string VisitVariableExpr(Variable expr)
+        {
+            return expr.Name.Lexeme;
+        }
+
+        /// <summary>
         /// Parenthesises the expression
         /// </summary>
         /// <param name="name"></param>

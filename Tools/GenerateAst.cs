@@ -24,7 +24,15 @@
                 "Binary   : Expr Left, Token Op, Expr Right",
                 "Grouping : Expr Expression",
                 "Literal  : object Value",
-                "Unary    : Token Op, Expr Right"
+                "Unary    : Token Op, Expr Right",
+                "Variable : Token Name"
+            });
+
+            DefineAst(outputDir, "Stmt", new List<string>()
+            {
+                "Expression : Expr Expr",
+                "Print      : Expr Expr",
+                "Var        : Token Name, Expr Initialiser"
             });
         }
 
@@ -39,9 +47,9 @@
             var path = Path.Combine(outputDir, $"{baseName}.cs");
             using var writer = new StreamWriter(path);
 
-            writer.WriteLine("using System;");
-            writer.WriteLine("using System.Collections.Generic;");
-            writer.WriteLine();
+            //writer.WriteLine("using System;");
+            //writer.WriteLine("using System.Collections.Generic;");
+            //writer.WriteLine();
             writer.WriteLine("namespace Lox");
             writer.WriteLine("{");
 

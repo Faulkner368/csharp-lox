@@ -31,7 +31,7 @@ namespace Lox
             if (args.Length > 1)
             {
                 Console.WriteLine("Usage: csLox [script]");
-                Environment.Exit(64);
+                System.Environment.Exit(64);
             }
             else if (args.Length == 1)
             {
@@ -54,12 +54,12 @@ namespace Lox
 
             if (_hadError)
             {
-                Environment.Exit(65);
+                System.Environment.Exit(65);
             }
 
             if (_hadRuntimeError)
             {
-                Environment.Exit(70);
+                System.Environment.Exit(70);
             }
         }
 
@@ -94,14 +94,14 @@ namespace Lox
             var scanner = new Scanner(source);
             var tokens = scanner.ScanTokens();
             var parser = new Parser(tokens);
-            var expression = parser.Parse();
+            var statements = parser.Parse();
 
-            if (_hadError || expression == null)
+            if (_hadError || statements == null || statements.Count == 0)
             {
                 return;
             }
 
-            _interpreter.Interpret(expression);
+            _interpreter.Interpret(statements);
         }
 
         /// <summary>

@@ -5,15 +5,25 @@ namespace Lox
     /// <summary>
     /// The interpreter that evaluates expressions in the AST.
     /// </summary>
-    public class Interpreter : Expr.IVisitor<object>
+    public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<object>
     {
-        public void Interpret(Expr expression)
+        /// <summary>
+        /// The environment that holds variable bindings.
+        /// </summary>
+        private readonly Environment _environment = new();
+
+        /// <summary>
+        /// Interprets a list of statements.
+        /// </summary>
+        /// <param name="statements"></param>
+        public void Interpret(List<Stmt> statements)
         {
             try
             {
-                var value = Evaluate(expression);
-                
-                Console.WriteLine(Stringify(value));
+                foreach (var stmt in statements)
+                {
+                    Execute(stmt);
+                }
             }
             catch (RuntimeError error)
             {
@@ -61,6 +71,16 @@ namespace Lox
 
             // Unreachable.
             return null;
+        }
+
+        /// <summary>
+        /// Visit a variable expression node.
+        /// </summary>
+        /// <param name="expr"></param>
+        /// <returns></returns>
+        public object VisitVariableExpr(Variable expr)
+        {
+            return _environment.Get(expr.Name);
         }
 
         /// <summary>
@@ -131,6 +151,56 @@ namespace Lox
         private object Evaluate(Expr expr)
         {
             return expr.Accept(this);
+        }
+
+        /// <summary>
+        /// Executes the given statement.
+        /// </summary>
+        /// <param name="stmt"></param>
+        private void Execute(Stmt stmt)
+        {
+            stmt.Accept(this);
+        }
+
+        /// <summary>
+        /// Visit an expression statement node.
+        /// </summary>
+        /// <param name="stmt"></param>
+        public object VisitExpressionStmt(Expression stmt)
+        {
+            Evaluate(stmt.Expr);
+
+            return null;
+        }
+
+        /// <summary>
+        /// Visit a print statement node.
+        /// </summary>
+        /// <param name="stmt"></param>
+        public object VisitPrintStmt(Print stmt)
+        {
+            var value = Evaluate(stmt.Expr);
+            Console.WriteLine(Stringify(value));
+
+            return null;
+        }
+
+        /// <summary>
+        /// Visit a variable declaration statement node.
+        /// </summary>
+        /// <param name="stmt"></param>
+        /// <returns></returns>
+        public object VisitVarStmt(Var stmt)
+        {
+            object value = null;
+            if (stmt.Initialiser != null)
+            {
+                value = Evaluate(stmt.Initialiser);
+            }
+
+            _environment.Define(stmt.Name.Lexeme, value);
+
+            return null;
         }
 
         /// <summary>

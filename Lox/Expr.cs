@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace Lox
 {
     /// <summary>
@@ -51,6 +48,11 @@ namespace Lox
             /// Visit a <see cref="Unary"/> expression node.
             /// </summary>
             T VisitUnaryExpr(Unary expr);
+
+            /// <summary>
+            /// Visit a <see cref="Variable"/> expression node.
+            /// </summary>
+            T VisitVariableExpr(Variable expr);
 
         }
     }
@@ -128,9 +130,9 @@ namespace Lox
     /// </summary>
     public class Literal : Expr
     {
-        public object? Value;
+        public object Value;
 
-        public Literal(object? value)        {
+        public Literal(object value)        {
             Value = value;
         }
 
@@ -185,6 +187,37 @@ namespace Lox
         public override T Accept<T>(IVisitor<T> visitor)
         {
             return visitor.VisitUnaryExpr(this);
+        }
+    }
+
+    /// <summary>
+    /// Represents a Variable expression in the abstract syntax tree (AST)
+    /// </summary>
+    public class Variable : Expr
+    {
+        public Token Name;
+
+        public Variable(Token name)        {
+            Name = name;
+        }
+
+        /// <summary>
+        /// Accepts a visitor and dispatches the call to
+        /// <see cref="IVisitor{T}.VisitVariableExpr(Variable)"/> so the visitor
+        /// can perform an operation specific to a binary expression node.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The return type produced by the visitor’s operation.
+        /// </typeparam>
+        /// <param name="visitor">
+        /// The visitor instance performing the operation.
+        /// </param>
+        /// <returns>
+        /// The result of the visitor’s operation.
+        /// </returns>
+        public override T Accept<T>(IVisitor<T> visitor)
+        {
+            return visitor.VisitVariableExpr(this);
         }
     }
 
