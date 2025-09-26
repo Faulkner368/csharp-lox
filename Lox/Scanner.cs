@@ -185,7 +185,7 @@ namespace Lox
                     }
                     else
                     {
-                        Program.Error(_line, "Unexpected character.");
+                        Lox.Error(_line, "Unexpected character.");
                     }
 
                     break;
@@ -253,7 +253,7 @@ namespace Lox
 
             if (IsAtEnd())
             {
-                Program.Error(_line, "Unterminated string.");
+                Lox.Error(_line, "Unterminated string.");
                 return;
             }
 

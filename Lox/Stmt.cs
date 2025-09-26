@@ -1,12 +1,12 @@
 namespace Lox
 {
     /// <summary>
-    /// The base class for all expression nodes in the AST.
+    /// The base class for all statement nodes in the AST.
     /// </summary>
     public abstract class Stmt
     {
         /// <summary>
-        /// Accepts a visitor that can perform some operation on this expression node.
+        /// Accepts a visitor that can perform some operation on this statement node.
         /// </summary>
         /// <typeparam name="T">
         /// The return type produced by the visitor’s operation.
@@ -21,7 +21,7 @@ namespace Lox
 
         /// <summary>
         /// Defines the visitor interface for traversing or operating on
-        /// different kinds of expression nodes in the abstract syntax tree (AST).
+        /// different kinds of statement nodes in the abstract syntax tree (AST).
         /// </summary>
         /// <typeparam name="T">
         /// The return type produced by the visitor’s operation (for example,
@@ -30,17 +30,22 @@ namespace Lox
         public interface IVisitor<T>
         {
             /// <summary>
-            /// Visit a <see cref="Expression"/> expression node.
+            /// Visit a <see cref="Block"/> statement node.
+            /// </summary>
+            T VisitBlockStmt(Block stmt);
+
+            /// <summary>
+            /// Visit a <see cref="Expression"/> statement node.
             /// </summary>
             T VisitExpressionStmt(Expression stmt);
 
             /// <summary>
-            /// Visit a <see cref="Print"/> expression node.
+            /// Visit a <see cref="Print"/> statement node.
             /// </summary>
             T VisitPrintStmt(Print stmt);
 
             /// <summary>
-            /// Visit a <see cref="Var"/> expression node.
+            /// Visit a <see cref="Var"/> statement node.
             /// </summary>
             T VisitVarStmt(Var stmt);
 
@@ -48,7 +53,38 @@ namespace Lox
     }
 
     /// <summary>
-    /// Represents a Expression expression in the abstract syntax tree (AST)
+    /// Represents a Block statement in the abstract syntax tree (AST)
+    /// </summary>
+    public class Block : Stmt
+    {
+        public List<Stmt> Statements;
+
+        public Block(List<Stmt> statements)        {
+            Statements = statements;
+        }
+
+        /// <summary>
+        /// Accepts a visitor and dispatches the call to
+        /// <see cref="IVisitor{T}.VisitBlockStmt(Block)"/> so the visitor
+        /// can perform an operation specific to a Block node.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The return type produced by the visitor’s operation.
+        /// </typeparam>
+        /// <param name="visitor">
+        /// The visitor instance performing the operation.
+        /// </param>
+        /// <returns>
+        /// The result of the visitor’s operation.
+        /// </returns>
+        public override T Accept<T>(IVisitor<T> visitor)
+        {
+            return visitor.VisitBlockStmt(this);
+        }
+    }
+
+    /// <summary>
+    /// Represents a Expression statement in the abstract syntax tree (AST)
     /// </summary>
     public class Expression : Stmt
     {
@@ -61,7 +97,7 @@ namespace Lox
         /// <summary>
         /// Accepts a visitor and dispatches the call to
         /// <see cref="IVisitor{T}.VisitExpressionStmt(Expression)"/> so the visitor
-        /// can perform an operation specific to a binary expression node.
+        /// can perform an operation specific to a Expression node.
         /// </summary>
         /// <typeparam name="T">
         /// The return type produced by the visitor’s operation.
@@ -79,7 +115,7 @@ namespace Lox
     }
 
     /// <summary>
-    /// Represents a Print expression in the abstract syntax tree (AST)
+    /// Represents a Print statement in the abstract syntax tree (AST)
     /// </summary>
     public class Print : Stmt
     {
@@ -92,7 +128,7 @@ namespace Lox
         /// <summary>
         /// Accepts a visitor and dispatches the call to
         /// <see cref="IVisitor{T}.VisitPrintStmt(Print)"/> so the visitor
-        /// can perform an operation specific to a binary expression node.
+        /// can perform an operation specific to a Print node.
         /// </summary>
         /// <typeparam name="T">
         /// The return type produced by the visitor’s operation.
@@ -110,7 +146,7 @@ namespace Lox
     }
 
     /// <summary>
-    /// Represents a Var expression in the abstract syntax tree (AST)
+    /// Represents a Var statement in the abstract syntax tree (AST)
     /// </summary>
     public class Var : Stmt
     {
@@ -126,7 +162,7 @@ namespace Lox
         /// <summary>
         /// Accepts a visitor and dispatches the call to
         /// <see cref="IVisitor{T}.VisitVarStmt(Var)"/> so the visitor
-        /// can perform an operation specific to a binary expression node.
+        /// can perform an operation specific to a Var node.
         /// </summary>
         /// <typeparam name="T">
         /// The return type produced by the visitor’s operation.

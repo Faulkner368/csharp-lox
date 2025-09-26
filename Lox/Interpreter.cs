@@ -10,12 +10,12 @@ namespace Lox
         /// <summary>
         /// Enables or disables debug output.
         /// </summary>
-        private const bool _debug = true;
+        private const bool _debug = false;
 
         /// <summary>
         /// The environment that holds variable bindings.
         /// </summary>
-        private readonly Environment _environment = new();
+        private Environment _environment = new();
 
         /// <summary>
         /// Interprets a list of statements.
@@ -34,7 +34,27 @@ namespace Lox
             }
             catch (RuntimeError error)
             {
-                Program.RuntimeError(error);
+                Lox.RuntimeError(error);
+            }
+        }
+
+        /// <summary>
+        /// Interprets a single expression and returns the result as a string.
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public string Interpret(Expr expression)
+        {
+            try
+            {
+                var value = Evaluate(expression);
+                return Stringify(value);
+            }
+            catch (RuntimeError error)
+            {
+                Lox.RuntimeError(error);
+
+                return null;
             }
         }
 
@@ -103,6 +123,7 @@ namespace Lox
         /// </summary>
         /// <param name="expr"></param>
         /// <returns></returns>
+        /// <exception cref="RuntimeError"></exception>"
         public object VisitBinaryExpr(Binary expr)
         {
             if (_debug) Console.WriteLine($"VisitBinaryExpr(): {expr.Left} {expr.Op} {expr.Right}");
@@ -182,6 +203,44 @@ namespace Lox
             
             stmt.Accept(this);
         }
+
+        /// <summary>
+        /// Executes a block of statements in the given environment.
+        /// </summary>
+        /// <param name="statements"></param>
+        /// <param name="environment"></param>
+        private void ExecuteBlock(List<Stmt> statements, Environment environment)
+        {
+            if (_debug) Console.WriteLine("ExecuteBlock()");
+
+            var previous = _environment;
+            try
+            {
+                _environment = environment;
+                foreach (var statement in statements)
+                {
+                    Execute(statement);
+                }
+            }
+            finally
+            {
+                _environment = previous;
+            }
+        }
+
+        /// <summary>
+        /// Executes a block of statements in a new environment.
+        /// </summary>
+        /// <param name="stmt"></param>
+        /// <returns></returns>
+        public object VisitBlockStmt(Block stmt)
+        {
+            if (_debug) Console.WriteLine("VisitBlockStmt()");
+
+            ExecuteBlock(stmt.Statements, new Environment(_environment));
+            
+            return null;
+        }   
 
         /// <summary>
         /// Visit an expression statement node.

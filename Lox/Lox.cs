@@ -5,7 +5,7 @@ namespace Lox
     /// <summary>
     /// The csLox interpreter
     /// </summary>
-    class Program
+    class Lox
     {
         /// <summary>
         /// The interpreter instance
@@ -72,16 +72,33 @@ namespace Lox
             
             for (;;)
             {
+                _hadError = false;
+
                 Console.WriteLine("> ");
-                var line = input.ReadLine();
-                
-                if (line == null)
+                var scanner = new Scanner(input.ReadLine() ?? "");
+                var tokens = scanner.ScanTokens();
+
+                var parser = new Parser(tokens);
+                object syntax = parser.ParseRepl();
+
+                if (_hadError || syntax == null)
                 {
-                    break;
+                    continue;
                 }
 
-                Run(line);
-                _hadError = false;
+                if (syntax is List<Stmt> list)
+                {
+                    _interpreter.Interpret((List<Stmt>)syntax);
+                }
+                else if (syntax is Expr expr)
+                {
+                    var result = _interpreter.Interpret((Expr)syntax);
+
+                    if (result != null)
+                    {
+                        Console.WriteLine($"= {result}");
+                    }
+                }
             }
         }
 

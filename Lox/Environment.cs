@@ -6,9 +6,31 @@
     public class Environment
     {
         /// <summary>
+        /// The enclosing environment, if any.
+        /// </summary>
+        private Environment? _enclosing;
+
+        /// <summary>
         /// Initialises a new instance of the <see cref="Environment"/> class.
         /// </summary>
         private readonly Dictionary<string, object> _values = new();
+
+        /// <summary>
+        /// Creates a new environment that encloses the given environment.
+        /// </summary>
+        /// <param name="environment"></param>
+        public Environment(Environment environment)
+        {
+            _enclosing = environment;
+        }
+
+        /// <summary>
+        /// Creates a new global environment.
+        /// </summary>
+        public Environment()
+        {
+            _enclosing = null;
+        }
 
         /// <summary>
         /// Defines variables in the environment.
@@ -23,17 +45,22 @@
         /// <summary>
         /// Gets the value of a variable from the environment.
         /// </summary>
-        /// <param name="token"></param>
+        /// <param name="name"></param>
         /// <returns></returns>
         /// <exception cref="RuntimeError"></exception>
-        public object Get(Token token)
+        public object Get(Token name)
         {
-            if (_values.ContainsKey(token.Lexeme))
+            if (_values.ContainsKey(name.Lexeme))
             {
-                return _values[token.Lexeme];
+                return _values[name.Lexeme];
             }
-            
-            throw new RuntimeError(null, $"Undefined variable '{token.Lexeme}'.");
+
+            if (_enclosing != null)
+            {
+                return _enclosing.Get(name);
+            }
+
+            throw new RuntimeError(null, $"Undefined variable '{name.Lexeme}'.");
         }
 
         /// <summary>
@@ -47,6 +74,12 @@
             if (_values.ContainsKey(token.Lexeme))
             {
                 _values[token.Lexeme] = value;
+                return;
+            }
+
+            if (_enclosing != null)
+            {
+                _enclosing.Assign(token, value);
                 return;
             }
 

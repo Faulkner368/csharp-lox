@@ -79,7 +79,7 @@ namespace Lox
         /// <summary>
         /// Accepts a visitor and dispatches the call to
         /// <see cref="IVisitor{T}.VisitAssignExpr(Assign)"/> so the visitor
-        /// can perform an operation specific to a binary expression node.
+        /// can perform an operation specific to a Assign node.
         /// </summary>
         /// <typeparam name="T">
         /// The return type produced by the visitor’s operation.
@@ -116,7 +116,7 @@ namespace Lox
         /// <summary>
         /// Accepts a visitor and dispatches the call to
         /// <see cref="IVisitor{T}.VisitBinaryExpr(Binary)"/> so the visitor
-        /// can perform an operation specific to a binary expression node.
+        /// can perform an operation specific to a Binary node.
         /// </summary>
         /// <typeparam name="T">
         /// The return type produced by the visitor’s operation.
@@ -147,7 +147,7 @@ namespace Lox
         /// <summary>
         /// Accepts a visitor and dispatches the call to
         /// <see cref="IVisitor{T}.VisitGroupingExpr(Grouping)"/> so the visitor
-        /// can perform an operation specific to a binary expression node.
+        /// can perform an operation specific to a Grouping node.
         /// </summary>
         /// <typeparam name="T">
         /// The return type produced by the visitor’s operation.
@@ -178,7 +178,7 @@ namespace Lox
         /// <summary>
         /// Accepts a visitor and dispatches the call to
         /// <see cref="IVisitor{T}.VisitLiteralExpr(Literal)"/> so the visitor
-        /// can perform an operation specific to a binary expression node.
+        /// can perform an operation specific to a Literal node.
         /// </summary>
         /// <typeparam name="T">
         /// The return type produced by the visitor’s operation.
@@ -212,7 +212,7 @@ namespace Lox
         /// <summary>
         /// Accepts a visitor and dispatches the call to
         /// <see cref="IVisitor{T}.VisitUnaryExpr(Unary)"/> so the visitor
-        /// can perform an operation specific to a binary expression node.
+        /// can perform an operation specific to a Unary node.
         /// </summary>
         /// <typeparam name="T">
         /// The return type produced by the visitor’s operation.
@@ -243,7 +243,7 @@ namespace Lox
         /// <summary>
         /// Accepts a visitor and dispatches the call to
         /// <see cref="IVisitor{T}.VisitVariableExpr(Variable)"/> so the visitor
-        /// can perform an operation specific to a binary expression node.
+        /// can perform an operation specific to a Variable node.
         /// </summary>
         /// <typeparam name="T">
         /// The return type produced by the visitor’s operation.

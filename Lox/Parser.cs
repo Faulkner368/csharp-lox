@@ -11,7 +11,17 @@ namespace Lox
         /// <summary>
         /// Enables or disables debug output.
         /// </summary>
-        private const bool _debug = true;
+        private bool _debug = false;
+
+        /// <summary>
+        /// Whether expressions are currently allowed.
+        /// </summary>
+        private bool _allowExpression;
+
+        /// <summary>
+        /// Whether an expression has been found.
+        /// </summary> 
+        private bool _foundExpression = false;
 
         /// <summary>
         /// Initialises a new instance of the <see cref="Parser"/> class.
@@ -95,6 +105,11 @@ namespace Lox
                 return PrintStatement();
             }
 
+            if (Match(LEFT_BRACE))
+            {
+                return new Block(Block());
+            }
+
             return ExpressionStatement();
         }
 
@@ -142,9 +157,37 @@ namespace Lox
             if (_debug) Console.WriteLine("ExpressionStatement()");
 
             var expr = Expression();
-            Consume(SEMICOLON, "Expect ';' after expression.");
+
+            if (_allowExpression && IsAtEnd())
+            {
+                _foundExpression = true;
+            }
+            else
+            {
+                Consume(SEMICOLON, "Expect ';' after expression.");
+            }
 
             return new Expression(expr);
+        }
+
+        /// <summary>
+        /// Parses a block of statements.
+        /// </summary>
+        /// <returns></returns>
+        private List<Stmt> Block()
+        {
+            if (_debug) Console.WriteLine("Block()");
+            
+            var statements = new List<Stmt>();
+            
+            while (!Check(RIGHT_BRACE) && !IsAtEnd())
+            {
+                statements.Add(Declaration());
+            }
+            
+            Consume(RIGHT_BRACE, "Expect '}' after block.");
+            
+            return statements;
         }
 
         /// <summary>
@@ -352,6 +395,7 @@ namespace Lox
         /// Parses a primary expression.
         /// </summary>
         /// <returns></returns>
+        /// <exception cref="ParseError"></exception>
         private Expr Primary()
         {
             if (_debug) Console.WriteLine("Primary()");
@@ -392,12 +436,11 @@ namespace Lox
         }
 
         /// <summary>
-        /// Consumes the current token if it matches the given type,
-        /// otherwise throws an exception with the given message.
+        /// Consumes the current token if it matches the given type.
         /// </summary>
         /// <param name="type"></param>
         /// <param name="message"></param>
-        /// <exception cref="Exception"></exception>
+        /// <exception cref="ParseError"></exception>
         private Token Consume(TokenType type, string message)
         {
             if (Check(type))
@@ -414,10 +457,9 @@ namespace Lox
         /// <param name="token"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        /// throws <see cref="ParseError"/>
         private ParseError Error(Token token, string message)
         {
-            Program.Error(token, message);
+            Lox.Error(token, message);
             return new ParseError();
         }
 
@@ -452,6 +494,34 @@ namespace Lox
 
                 Advance();
             }
+        }
+
+        /// <summary>
+        /// Parses a REPL input, allowing for single expressions.
+        /// </summary>
+        /// <returns></returns>
+        public object ParseRepl()
+        {
+            _allowExpression = true;
+            
+            var statements = new List<Stmt>();
+            while (!IsAtEnd())
+            {
+                statements.Add(Declaration());
+
+                if (_foundExpression)
+                {
+                    var last = statements.LastOrDefault();
+                    if (last is Expression exprStmt)
+                    {
+                        return exprStmt.Expr;
+                    }
+
+                    _allowExpression = false;
+                }
+            }
+
+            return statements;
         }
     }
 }
