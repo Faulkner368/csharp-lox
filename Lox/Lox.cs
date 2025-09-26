@@ -166,7 +166,16 @@ namespace Lox
         /// <param name="error"></param>
         public static void RuntimeError(RuntimeError error)
         {
-            Console.Error.WriteLine($"{error.Message}\n[line {error.Token.Line}]");
+            var message = error?.Message ?? "Runtime error.";
+            if (error?.Token != null)
+            {
+                Console.Error.WriteLine($"{message}\n[line {error.Token.Line}]");
+            }
+            else
+            {
+                Console.Error.WriteLine(message);
+            }
+
             _hadRuntimeError = true;
         }
     }

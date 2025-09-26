@@ -15,18 +15,19 @@ namespace Lox
         /// <summary>
         /// The global environment that holds built-in functions.
         /// </summary>
-        public readonly Environment Globals = new();
+        public Environment Globals = new();
 
         /// <summary>
         /// The environment that holds variable bindings.
         /// </summary>
-        private Environment _environment = new();
+        private Environment _environment;
 
         /// <summary>
         /// Initialises a new instance of the <see cref="Interpreter"/> class.
         /// </summary>
         public Interpreter()
         {
+            _environment = Globals;
             Globals.Define("clock", new ClockLoxCallable());
         }
 
@@ -212,10 +213,8 @@ namespace Lox
                     return (double)left <= (double)right;
 
                 case BANG_EQUAL:
-                    CheckNumberOperands(expr.Op, left, right);
                     return !Equals(left, right);
                 case EQUAL_EQUAL:
-                    CheckNumberOperands(expr.Op, left, right);
                     return Equals(left, right);
             }
 
@@ -242,19 +241,17 @@ namespace Lox
             
             }
             
-            if (callee is not ILoxCallable)
+            if (callee is not ILoxCallable callable)
             {
                 throw new RuntimeError(expr.Paren, "Can only call functions and classes.");
             }
 
-            var function = (LoxFunction)callee;
-
-            if (arguments.Count != function.Arity())
+            if (arguments.Count != callable.Arity())
             {
-                throw new RuntimeError(expr.Paren, $"Expected {function.Arity()} arguments but got {arguments.Count}.");
+                throw new RuntimeError(expr.Paren, $"Expected {callable.Arity()} arguments but got {arguments.Count}.");
             }
 
-            return function.Call(this, arguments);
+            return callable.Call(this, arguments);
         }
 
         /// <summary>
@@ -343,7 +340,7 @@ namespace Lox
                 Console.WriteLine($"VisitFunctionStmt(): {stmt.Name}({string.Join(", ", stmt.Parameters)}) {{ ... }}");
             }
             
-            var function = new LoxFunction(stmt);
+            var function = new LoxFunction(stmt, _environment, false);
             _environment.Define(stmt.Name.Lexeme, function);
             
             return null;
@@ -382,6 +379,25 @@ namespace Lox
             Console.WriteLine(Stringify(value));
 
             return null;
+        }
+
+        /// <summary>
+        /// Visit a return statement node.
+        /// </summary>
+        /// <param name="stmt"></param>
+        /// <returns></returns>
+        /// <exception cref="ReturnException"></exception>
+        public object VisitReturnStmt(Return stmt)
+        {
+            if (_debug) Console.WriteLine($"VisitReturnStmt(): {stmt.Value}");
+            
+            object value = null;
+            if (stmt.Value != null)
+            {
+                value = Evaluate(stmt.Value);
+            }
+            
+            throw new ReturnException(value);
         }
 
         /// <summary>

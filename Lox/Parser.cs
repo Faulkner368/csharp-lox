@@ -120,6 +120,11 @@ namespace Lox
                 return PrintStatement();
             }
 
+            if (Match(RETURN))
+            {
+                return ReturnStatement();
+            }
+
             if (Match(WHILE))
             {
                 return WhileStatement();
@@ -233,6 +238,25 @@ namespace Lox
             Consume(SEMICOLON, "Expect ';' after value.");
             
             return new Print(value);
+        }
+
+        /// <summary>
+        /// Parses a return statement.
+        /// </summary>
+        /// <returns></returns>
+        private Stmt ReturnStatement()
+        {
+            var keyword = Previous();
+            
+            Expr value = null;
+            if (!Check(SEMICOLON))
+            {
+                value = Expression();
+            }
+            
+            Consume(SEMICOLON, "Expect ';' after return value.");
+            
+            return new Return(keyword, value);
         }
 
         /// <summary>

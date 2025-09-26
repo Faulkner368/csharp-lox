@@ -55,6 +55,11 @@ namespace Lox
             T VisitPrintStmt(Print stmt);
 
             /// <summary>
+            /// Visit a <see cref="Return"/> statement node.
+            /// </summary>
+            T VisitReturnStmt(Return stmt);
+
+            /// <summary>
             /// Visit a <see cref="Var"/> statement node.
             /// </summary>
             T VisitVarStmt(Var stmt);
@@ -231,6 +236,40 @@ namespace Lox
         public override T Accept<T>(IVisitor<T> visitor)
         {
             return visitor.VisitPrintStmt(this);
+        }
+    }
+
+    /// <summary>
+    /// Represents a Return statement in the abstract syntax tree (AST)
+    /// </summary>
+    public class Return : Stmt
+    {
+        public Token Keyword;
+
+        public Expr? Value;
+
+        public Return(Token keyword, Expr value)        {
+            Keyword = keyword;
+            Value = value;
+        }
+
+        /// <summary>
+        /// Accepts a visitor and dispatches the call to
+        /// <see cref="IVisitor{T}.VisitReturnStmt(Return)"/> so the visitor
+        /// can perform an operation specific to a Return node.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The return type produced by the visitor’s operation.
+        /// </typeparam>
+        /// <param name="visitor">
+        /// The visitor instance performing the operation.
+        /// </param>
+        /// <returns>
+        /// The result of the visitor’s operation.
+        /// </returns>
+        public override T Accept<T>(IVisitor<T> visitor)
+        {
+            return visitor.VisitReturnStmt(this);
         }
     }
 

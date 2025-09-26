@@ -10,9 +10,21 @@
         /// </summary>
         private readonly Function _declaration;
 
-        public LoxFunction(Function declaration)
+        /// <summary>
+        /// The closure environment the function was declared in
+        /// </summary>
+        private readonly Environment _closure;
+
+        /// <summary>
+        /// Whether or not this function is an initialiser
+        /// </summary>
+        private readonly bool _isInitialiser;
+
+        public LoxFunction(Function declaration, Environment closure, bool isInitialiser = false)
         {
             _declaration = declaration;
+            _closure = closure;
+            _isInitialiser = isInitialiser;
         }
 
         /// <summary>
@@ -38,7 +50,14 @@
                 environment.Define(_declaration.Parameters[i].Lexeme, arguments[i]);
             }
 
-            interpreter.ExecuteBlock(_declaration.Body, environment);
+            try
+            {
+                interpreter.ExecuteBlock(_declaration.Body, environment);
+            }
+            catch (ReturnException returnValue)
+            {
+                return returnValue.Value;
+            }
 
             return null;
         }
