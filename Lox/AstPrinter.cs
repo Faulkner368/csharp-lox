@@ -89,9 +89,34 @@ namespace Lox
             return Parenthesise(expr.Op.Lexeme, expr.Left, expr.Right);
         }
 
+        /// <summary>
+        /// Visits a call expression
+        /// </summary>
+        /// <param name="expr"></param>
+        /// <returns></returns>
         public string VisitCallExpr(Call expr)
         {
             return Parenthesise2("call", expr.Callee, expr.Arguments);
+        }
+
+        /// <summary>
+        /// Visits a get expression
+        /// </summary>
+        /// <param name="expr"></param>
+        /// <returns></returns>
+        public string VisitGetExpr(Get expr)
+        {
+            return Parenthesise("get " + expr.Name.Lexeme, expr.Obj);
+        }
+
+        /// <summary>
+        /// Visits a set expression
+        /// </summary>
+        /// <param name="expr"></param>
+        /// <returns></returns>
+        public string VisitSetExpr(Set expr)
+        {
+            return Parenthesise("set " + expr.Name.Lexeme, expr.Obj, expr.Value);
         }
 
         /// <summary>

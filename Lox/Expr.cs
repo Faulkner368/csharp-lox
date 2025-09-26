@@ -45,6 +45,11 @@ namespace Lox
             T VisitCallExpr(Call expr);
 
             /// <summary>
+            /// Visit a <see cref="Get"/> expression node.
+            /// </summary>
+            T VisitGetExpr(Get expr);
+
+            /// <summary>
             /// Visit a <see cref="Grouping"/> expression node.
             /// </summary>
             T VisitGroupingExpr(Grouping expr);
@@ -58,6 +63,11 @@ namespace Lox
             /// Visit a <see cref="Logical"/> expression node.
             /// </summary>
             T VisitLogicalExpr(Logical expr);
+
+            /// <summary>
+            /// Visit a <see cref="Set"/> expression node.
+            /// </summary>
+            T VisitSetExpr(Set expr);
 
             /// <summary>
             /// Visit a <see cref="Unary"/> expression node.
@@ -181,6 +191,40 @@ namespace Lox
     }
 
     /// <summary>
+    /// Represents a Get expression in the abstract syntax tree (AST)
+    /// </summary>
+    public class Get : Expr
+    {
+        public Expr Obj;
+
+        public Token Name;
+
+        public Get(Expr obj, Token name)        {
+            Obj = obj;
+            Name = name;
+        }
+
+        /// <summary>
+        /// Accepts a visitor and dispatches the call to
+        /// <see cref="IVisitor{T}.VisitGetExpr(Get)"/> so the visitor
+        /// can perform an operation specific to a Get node.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The return type produced by the visitor’s operation.
+        /// </typeparam>
+        /// <param name="visitor">
+        /// The visitor instance performing the operation.
+        /// </param>
+        /// <returns>
+        /// The result of the visitor’s operation.
+        /// </returns>
+        public override T Accept<T>(IVisitor<T> visitor)
+        {
+            return visitor.VisitGetExpr(this);
+        }
+    }
+
+    /// <summary>
     /// Represents a Grouping expression in the abstract syntax tree (AST)
     /// </summary>
     public class Grouping : Expr
@@ -276,6 +320,43 @@ namespace Lox
         public override T Accept<T>(IVisitor<T> visitor)
         {
             return visitor.VisitLogicalExpr(this);
+        }
+    }
+
+    /// <summary>
+    /// Represents a Set expression in the abstract syntax tree (AST)
+    /// </summary>
+    public class Set : Expr
+    {
+        public Expr Obj;
+
+        public Token Name;
+
+        public Expr Value;
+
+        public Set(Expr obj, Token name, Expr value)        {
+            Obj = obj;
+            Name = name;
+            Value = value;
+        }
+
+        /// <summary>
+        /// Accepts a visitor and dispatches the call to
+        /// <see cref="IVisitor{T}.VisitSetExpr(Set)"/> so the visitor
+        /// can perform an operation specific to a Set node.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The return type produced by the visitor’s operation.
+        /// </typeparam>
+        /// <param name="visitor">
+        /// The visitor instance performing the operation.
+        /// </param>
+        /// <returns>
+        /// The result of the visitor’s operation.
+        /// </returns>
+        public override T Accept<T>(IVisitor<T> visitor)
+        {
+            return visitor.VisitSetExpr(this);
         }
     }
 

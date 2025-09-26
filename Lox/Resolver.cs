@@ -166,6 +166,19 @@
         }
 
         /// <summary>
+        /// Visits a class declaration statement
+        /// </summary>
+        /// <param name="stmt"></param>
+        /// <returns></returns>
+        public object VisitClassStmt(Class stmt)
+        {
+            Declare(stmt.Name);
+            Define(stmt.Name);
+
+            return null;
+        }
+
+        /// <summary>
         /// Visits a variable declaration statement
         /// </summary>
         /// <param name="stmt"></param>
@@ -337,6 +350,18 @@
         }
 
         /// <summary>
+        /// Visits a get expression
+        /// </summary>
+        /// <param name="expr"></param>
+        /// <returns></returns>
+        public object VisitGetExpr(Get expr)
+        {
+            Resolve(expr.Obj);
+            
+            return null;
+        }
+
+        /// <summary>
         /// Visits a grouping expression
         /// </summary>
         /// <param name="expr"></param>
@@ -368,6 +393,19 @@
             Resolve(expr.Left);
             Resolve(expr.Right);
 
+            return null;
+        }
+
+        /// <summary>
+        /// Visits a set expression
+        /// </summary>
+        /// <param name="expr"></param>
+        /// <returns></returns>
+        public object VisitSetExpr(Set expr)
+        {
+            Resolve(expr.Value);
+            Resolve(expr.Obj);
+            
             return null;
         }
 

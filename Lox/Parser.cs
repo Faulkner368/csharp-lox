@@ -77,6 +77,11 @@ namespace Lox
 
             try
             {
+                if (Match(CLASS))
+                {
+                    return ClassDeclaration();
+                }
+
                 if (Match(FUN))
                 {
                     return Function("function");
@@ -95,6 +100,22 @@ namespace Lox
 
                 return null;
             }
+        }
+
+        private Stmt ClassDeclaration()
+        {
+            var name = Consume(IDENTIFIER, "Expect class name.");
+            Consume(LEFT_BRACE, "Expect '{' before class body.");
+
+            var methods = new List<Function>();
+            while (!Check(RIGHT_BRACE) && !IsAtEnd())
+            {
+                methods.Add(Function("method"));
+            }
+
+            Consume(RIGHT_BRACE, "Expect '}' after class body.");
+
+            return new Class(name, methods);
         }
 
         /// <summary>
@@ -395,6 +416,10 @@ namespace Lox
                     
                     return new Assign(name, value);
                 }
+                else if (expr is Get get)
+                {
+                    return new Set(get.Obj, get.Name, value);
+                }
 
                 Error(equals, "Invalid assignment target.");
             }
@@ -660,6 +685,11 @@ namespace Lox
                 if (Match(LEFT_PAREN))
                 {
                     expr = FinishCall(expr);
+                }
+                else if(Match(DOT))
+                {
+                    var name = Consume(IDENTIFIER, "Expect property name after '.'.");
+                    expr = new Get(expr, name);
                 }
                 else
                 {

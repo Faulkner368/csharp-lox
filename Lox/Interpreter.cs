@@ -118,6 +118,23 @@ namespace Lox
             return Evaluate(expr.Right);
         }
 
+        public object VisitSetExpr(Set expr)
+        {
+            if (_debug) Console.WriteLine($"VisitSetExpr(): {expr.Obj}.{expr.Name} = {expr.Value}");
+            
+            var obj = Evaluate(expr.Obj);
+
+            if (obj is not LoxInstance instance)
+            {
+                throw new RuntimeError(expr.Name, "Only instances have fields.");
+            }
+            
+            var value = Evaluate(expr.Value);
+            instance.Set(expr.Name, value);
+            
+            return value;
+        }
+
         /// <summary>
         /// Visit a grouping expression node.
         /// </summary>
@@ -271,6 +288,18 @@ namespace Lox
             return callable.Call(this, arguments);
         }
 
+        public object VisitGetExpr(Get expr)
+        {
+            if (_debug) Console.WriteLine($"VisitGetExpr(): {expr.Obj}.{expr.Name}");
+            
+            var obj = Evaluate(expr.Obj);
+            if (obj is LoxInstance instance)
+            {
+                return instance.Get(expr.Name);
+            }
+            
+            throw new RuntimeError(expr.Name, "Only instances have properties.");
+        }
         /// <summary>
         /// Evaluates the given expression and returns the result.
         /// </summary>
@@ -340,7 +369,23 @@ namespace Lox
             ExecuteBlock(stmt.Statements, new Environment(_environment));
             
             return null;
-        }   
+        }
+
+        /// <summary>
+        /// Visit a class declaration statement node.
+        /// </summary>
+        /// <param name="stmt"></param>
+        /// <returns></returns>
+        public object VisitClassStmt(Class stmt)
+        {
+            if (_debug) Console.WriteLine($"VisitClassStmt(): {stmt.Name}");
+            
+           _environment.Define(stmt.Name.Lexeme, null);
+            var klass = new LoxClass(stmt.Name.Lexeme);
+            _environment.Assign(stmt.Name, klass);
+
+            return null;
+        }
 
         /// <summary>
         /// Visit an expression statement node.

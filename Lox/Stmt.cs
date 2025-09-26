@@ -35,6 +35,11 @@ namespace Lox
             T VisitBlockStmt(Block stmt);
 
             /// <summary>
+            /// Visit a <see cref="Class"/> statement node.
+            /// </summary>
+            T VisitClassStmt(Class stmt);
+
+            /// <summary>
             /// Visit a <see cref="Expression"/> statement node.
             /// </summary>
             T VisitExpressionStmt(Expression stmt);
@@ -100,6 +105,40 @@ namespace Lox
         public override T Accept<T>(IVisitor<T> visitor)
         {
             return visitor.VisitBlockStmt(this);
+        }
+    }
+
+    /// <summary>
+    /// Represents a Class statement in the abstract syntax tree (AST)
+    /// </summary>
+    public class Class : Stmt
+    {
+        public Token Name;
+
+        public List<Function> Methods;
+
+        public Class(Token name, List<Function> methods)        {
+            Name = name;
+            Methods = methods;
+        }
+
+        /// <summary>
+        /// Accepts a visitor and dispatches the call to
+        /// <see cref="IVisitor{T}.VisitClassStmt(Class)"/> so the visitor
+        /// can perform an operation specific to a Class node.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The return type produced by the visitor’s operation.
+        /// </typeparam>
+        /// <param name="visitor">
+        /// The visitor instance performing the operation.
+        /// </param>
+        /// <returns>
+        /// The result of the visitor’s operation.
+        /// </returns>
+        public override T Accept<T>(IVisitor<T> visitor)
+        {
+            return visitor.VisitClassStmt(this);
         }
     }
 
@@ -246,7 +285,7 @@ namespace Lox
     {
         public Token Keyword;
 
-        public Expr? Value;
+        public Expr Value;
 
         public Return(Token keyword, Expr value)        {
             Keyword = keyword;
