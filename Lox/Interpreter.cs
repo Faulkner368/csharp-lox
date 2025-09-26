@@ -15,7 +15,7 @@ namespace Lox
         /// <summary>
         /// The global environment that holds built-in functions.
         /// </summary>
-        private readonly Environment _globals = new();
+        public readonly Environment Globals = new();
 
         /// <summary>
         /// The environment that holds variable bindings.
@@ -27,7 +27,7 @@ namespace Lox
         /// </summary>
         public Interpreter()
         {
-            _globals.Define("clock", new ClockLoxCallable());
+            Globals.Define("clock", new ClockLoxCallable());
         }
 
         /// <summary>
@@ -285,7 +285,7 @@ namespace Lox
         /// </summary>
         /// <param name="statements"></param>
         /// <param name="environment"></param>
-        private void ExecuteBlock(List<Stmt> statements, Environment environment)
+        public void ExecuteBlock(List<Stmt> statements, Environment environment)
         {
             if (_debug) Console.WriteLine("ExecuteBlock()");
 
@@ -328,6 +328,24 @@ namespace Lox
 
             Evaluate(stmt.Expr);
 
+            return null;
+        }
+
+        /// <summary>
+        /// Visit a function declaration statement node.
+        /// </summary>
+        /// <param name="stmt"></param>
+        /// <returns></returns>
+        public object VisitFunctionStmt(Function stmt)
+        {
+            if (_debug)
+            {
+                Console.WriteLine($"VisitFunctionStmt(): {stmt.Name}({string.Join(", ", stmt.Parameters)}) {{ ... }}");
+            }
+            
+            var function = new LoxFunction(stmt);
+            _environment.Define(stmt.Name.Lexeme, function);
+            
             return null;
         }
 

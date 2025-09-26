@@ -40,6 +40,11 @@ namespace Lox
             T VisitExpressionStmt(Expression stmt);
 
             /// <summary>
+            /// Visit a <see cref="Function"/> statement node.
+            /// </summary>
+            T VisitFunctionStmt(Function stmt);
+
+            /// <summary>
             /// Visit a <see cref="If"/> statement node.
             /// </summary>
             T VisitIfStmt(If stmt);
@@ -121,6 +126,43 @@ namespace Lox
         public override T Accept<T>(IVisitor<T> visitor)
         {
             return visitor.VisitExpressionStmt(this);
+        }
+    }
+
+    /// <summary>
+    /// Represents a Function statement in the abstract syntax tree (AST)
+    /// </summary>
+    public class Function : Stmt
+    {
+        public Token Name;
+
+        public List<Token> Parameters;
+
+        public List<Stmt> Body;
+
+        public Function(Token name, List<Token> parameters, List<Stmt> body)        {
+            Name = name;
+            Parameters = parameters;
+            Body = body;
+        }
+
+        /// <summary>
+        /// Accepts a visitor and dispatches the call to
+        /// <see cref="IVisitor{T}.VisitFunctionStmt(Function)"/> so the visitor
+        /// can perform an operation specific to a Function node.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The return type produced by the visitor’s operation.
+        /// </typeparam>
+        /// <param name="visitor">
+        /// The visitor instance performing the operation.
+        /// </param>
+        /// <returns>
+        /// The result of the visitor’s operation.
+        /// </returns>
+        public override T Accept<T>(IVisitor<T> visitor)
+        {
+            return visitor.VisitFunctionStmt(this);
         }
     }
 

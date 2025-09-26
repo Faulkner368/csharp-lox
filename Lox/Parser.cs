@@ -77,6 +77,11 @@ namespace Lox
 
             try
             {
+                if (Match(FUN))
+                {
+                    return Function("function");
+                }
+
                 if (Match(VAR))
                 {
                     return VarDeclaration();
@@ -287,6 +292,42 @@ namespace Lox
             }
 
             return new Expression(expr);
+        }
+
+        /// <summary>
+        /// Parses a function declaration.
+        /// </summary>
+        /// <param name="kind"></param>
+        /// <returns></returns>
+        private Function Function(string kind)
+        {
+            if (_debug) Console.WriteLine("Function()");
+            
+            var name = Consume(IDENTIFIER, $"Expect {kind} name.");
+            
+            Consume(LEFT_PAREN, $"Expect '(' after {kind} name.");
+            
+            var parameters = new List<Token>();
+            if (!Check(RIGHT_PAREN))
+            {
+                do
+                {
+                    if (parameters.Count >= 255)
+                    {
+                        Error(Peek(), "Can't have more than 255 parameters.");
+                    }
+            
+                    parameters.Add(Consume(IDENTIFIER, "Expect parameter name."));
+                } while (Match(COMMA));
+            }
+            
+            Consume(RIGHT_PAREN, "Expect ')' after parameters.");
+            
+            Consume(LEFT_BRACE, $"Expect '{{' before {kind} body.");
+
+            var body = Block();
+            
+            return new Function(name, parameters, body);
         }
 
         /// <summary>
