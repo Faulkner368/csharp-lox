@@ -69,6 +69,16 @@ namespace Lox
         }
 
         /// <summary>
+        /// Visits an assignment expression
+        /// </summary>
+        /// <param name="expr"></param>
+        /// <returns></returns>
+        public string VisitAssignExpr(Assign expr)
+        {
+            return Parenthesise("assign " + expr.Name.Lexeme, expr.Value);
+        }   
+
+        /// <summary>
         /// Parenthesises the expression
         /// </summary>
         /// <param name="name"></param>
