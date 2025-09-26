@@ -50,6 +50,11 @@ namespace Lox
             T VisitLiteralExpr(Literal expr);
 
             /// <summary>
+            /// Visit a <see cref="Logical"/> expression node.
+            /// </summary>
+            T VisitLogicalExpr(Logical expr);
+
+            /// <summary>
             /// Visit a <see cref="Unary"/> expression node.
             /// </summary>
             T VisitUnaryExpr(Unary expr);
@@ -192,6 +197,43 @@ namespace Lox
         public override T Accept<T>(IVisitor<T> visitor)
         {
             return visitor.VisitLiteralExpr(this);
+        }
+    }
+
+    /// <summary>
+    /// Represents a Logical expression in the abstract syntax tree (AST)
+    /// </summary>
+    public class Logical : Expr
+    {
+        public Expr Left;
+
+        public Token Op;
+
+        public Expr Right;
+
+        public Logical(Expr left, Token op, Expr right)        {
+            Left = left;
+            Op = op;
+            Right = right;
+        }
+
+        /// <summary>
+        /// Accepts a visitor and dispatches the call to
+        /// <see cref="IVisitor{T}.VisitLogicalExpr(Logical)"/> so the visitor
+        /// can perform an operation specific to a Logical node.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The return type produced by the visitor’s operation.
+        /// </typeparam>
+        /// <param name="visitor">
+        /// The visitor instance performing the operation.
+        /// </param>
+        /// <returns>
+        /// The result of the visitor’s operation.
+        /// </returns>
+        public override T Accept<T>(IVisitor<T> visitor)
+        {
+            return visitor.VisitLogicalExpr(this);
         }
     }
 

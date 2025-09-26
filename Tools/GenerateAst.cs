@@ -25,6 +25,7 @@
                 "Binary   : Expr Left, Token Op, Expr Right",
                 "Grouping : Expr Expression",
                 "Literal  : object Value",
+                "Logical  : Expr Left, Token Op, Expr Right",
                 "Unary    : Token Op, Expr Right",
                 "Variable : Token Name"
             }, "expression");
@@ -33,6 +34,7 @@
             {
                 "Block      : List<Stmt> Statements",
                 "Expression : Expr Expr",
+                "If         : Expr Condition, Stmt ThenBranch, Stmt? ElseBranch",
                 "Print      : Expr Expr",
                 "Var        : Token Name, Expr Initialiser"
             }, "statement");

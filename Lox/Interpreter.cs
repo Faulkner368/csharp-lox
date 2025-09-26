@@ -10,7 +10,7 @@ namespace Lox
         /// <summary>
         /// Enables or disables debug output.
         /// </summary>
-        private const bool _debug = false;
+        private bool _debug = false;
 
         /// <summary>
         /// The environment that holds variable bindings.
@@ -68,6 +68,35 @@ namespace Lox
             if (_debug) Console.WriteLine($"VisitLiteralExpr(): {expr.Value}");
 
             return expr.Value;
+        }
+
+        /// <summary>
+        /// Visit a logical expression node.
+        /// </summary>
+        /// <param name="expr"></param>
+        /// <returns></returns>
+        public object VisitLogicalExpr(Logical expr)
+        {
+            if (_debug) Console.WriteLine($"VisitLogicalExpr(): {expr.Left} {expr.Op} {expr.Right}");
+            
+            var left = Evaluate(expr.Left);
+            
+            if (expr.Op.Type == OR)
+            {
+                if (IsTruthy(left))
+                {
+                    return left;
+                }
+            }
+            else // AND
+            {
+                if (!IsTruthy(left))
+                {
+                    return left;
+                }
+            }
+            
+            return Evaluate(expr.Right);
         }
 
         /// <summary>
@@ -252,6 +281,27 @@ namespace Lox
 
             Evaluate(stmt.Expr);
 
+            return null;
+        }
+
+        /// <summary>
+        /// Visit an if statement node.
+        /// </summary>
+        /// <param name="stmt"></param>
+        /// <returns></returns>
+        public object VisitIfStmt(If stmt)
+        {
+            if (_debug) Console.WriteLine($"VisitIfStmt(): {stmt.Condition} ? {stmt.ThenBranch} : {stmt.ElseBranch}");
+            
+            if (IsTruthy(Evaluate(stmt.Condition)))
+            {
+                Execute(stmt.ThenBranch);
+            }
+            else if (stmt.ElseBranch != null)
+            {
+                Execute(stmt.ElseBranch);
+            }
+            
             return null;
         }
 

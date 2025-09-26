@@ -100,6 +100,11 @@ namespace Lox
         {
             if (_debug) Console.WriteLine("Statement()");
 
+            if (Match(IF))
+            {
+                return IfStatement();
+            }
+
             if (Match(PRINT))
             {
                 return PrintStatement();
@@ -111,6 +116,28 @@ namespace Lox
             }
 
             return ExpressionStatement();
+        }
+
+        /// <summary>
+        /// Parses an if statement.
+        /// </summary>
+        /// <returns></returns>
+        private Stmt IfStatement()
+        {
+            if (_debug) Console.WriteLine("IfStatement()");
+            
+            Consume(LEFT_PAREN, "Expect '(' after 'if'.");
+            var condition = Expression();
+            Consume(RIGHT_PAREN, "Expect ')' after if condition.");
+            
+            var thenBranch = Statement();
+            Stmt elseBranch = null;
+            if (Match(ELSE))
+            {
+                elseBranch = Statement();
+            }
+            
+            return new If(condition, thenBranch, elseBranch);
         }
 
         /// <summary>
@@ -198,7 +225,7 @@ namespace Lox
         {
             if (_debug) Console.WriteLine("Assignment()");
 
-            var expr = Equality();
+            var expr = Or();
 
             if (Match(EQUAL))
             {
@@ -215,6 +242,46 @@ namespace Lox
                 Error(equals, "Invalid assignment target.");
             }
 
+            return expr;
+        }
+
+        /// <summary>
+        /// Parses an or expression.
+        /// </summary>
+        /// <returns></returns>
+        private Expr Or()
+        {
+            if (_debug) Console.WriteLine("Or()");
+            
+            var expr = And();
+            
+            while (Match(OR))
+            {
+                var op = Previous();
+                var right = And();
+                expr = new Logical(expr, op, right);
+            }
+            
+            return expr;
+        }
+
+        /// <summary>
+        /// Parses an and expression.
+        /// </summary>
+        /// <returns></returns>
+        private Expr And()
+        {
+            if (_debug) Console.WriteLine("And()");
+            
+            var expr = Equality();
+            
+            while (Match(AND))
+            {
+                var op = Previous();
+                var right = Equality();
+                expr = new Logical(expr, op, right);
+            }
+            
             return expr;
         }
 

@@ -40,6 +40,11 @@ namespace Lox
             T VisitExpressionStmt(Expression stmt);
 
             /// <summary>
+            /// Visit a <see cref="If"/> statement node.
+            /// </summary>
+            T VisitIfStmt(If stmt);
+
+            /// <summary>
             /// Visit a <see cref="Print"/> statement node.
             /// </summary>
             T VisitPrintStmt(Print stmt);
@@ -111,6 +116,43 @@ namespace Lox
         public override T Accept<T>(IVisitor<T> visitor)
         {
             return visitor.VisitExpressionStmt(this);
+        }
+    }
+
+    /// <summary>
+    /// Represents a If statement in the abstract syntax tree (AST)
+    /// </summary>
+    public class If : Stmt
+    {
+        public Expr Condition;
+
+        public Stmt ThenBranch;
+
+        public Stmt? ElseBranch;
+
+        public If(Expr condition, Stmt thenBranch, Stmt? elseBranch)        {
+            Condition = condition;
+            ThenBranch = thenBranch;
+            ElseBranch = elseBranch;
+        }
+
+        /// <summary>
+        /// Accepts a visitor and dispatches the call to
+        /// <see cref="IVisitor{T}.VisitIfStmt(If)"/> so the visitor
+        /// can perform an operation specific to a If node.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The return type produced by the visitor’s operation.
+        /// </typeparam>
+        /// <param name="visitor">
+        /// The visitor instance performing the operation.
+        /// </param>
+        /// <returns>
+        /// The result of the visitor’s operation.
+        /// </returns>
+        public override T Accept<T>(IVisitor<T> visitor)
+        {
+            return visitor.VisitIfStmt(this);
         }
     }
 
