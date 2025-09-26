@@ -1,4 +1,4 @@
-﻿using System.Xml.Linq;
+﻿using System;
 using static Lox.TokenType;
 
 namespace Lox
@@ -8,6 +8,11 @@ namespace Lox
     /// </summary>
     public class Parser
     {
+        /// <summary>
+        /// Enables or disables debug output.
+        /// </summary>
+        private const bool _debug = true;
+
         /// <summary>
         /// Initialises a new instance of the <see cref="Parser"/> class.
         /// </summary>
@@ -29,6 +34,8 @@ namespace Lox
         /// <returns></returns>
         public List<Stmt> Parse()
         {
+            if (_debug) Console.WriteLine("Parse()");
+
             var statements = new List<Stmt>();
 
             while(!IsAtEnd())
@@ -45,7 +52,9 @@ namespace Lox
         /// <returns></returns>
         private Expr Expression()
         {
-            return Equality();
+            if (_debug) Console.WriteLine("Expression()");
+
+            return Assignment();
         }
 
         /// <summary>
@@ -54,6 +63,8 @@ namespace Lox
         /// <returns></returns>
         private Stmt Declaration()
         {
+            if (_debug) Console.WriteLine("Declaration()");
+
             try
             {
                 if (Match(VAR))
@@ -77,6 +88,8 @@ namespace Lox
         /// <returns></returns>
         private Stmt Statement()
         {
+            if (_debug) Console.WriteLine("Statement()");
+
             if (Match(PRINT))
             {
                 return PrintStatement();
@@ -91,6 +104,8 @@ namespace Lox
         /// <returns></returns>
         private Stmt PrintStatement()
         {
+            if (_debug) Console.WriteLine("PrintStatement()");
+
             var value = Expression();
             Consume(SEMICOLON, "Expect ';' after value.");
             
@@ -103,17 +118,19 @@ namespace Lox
         /// <returns></returns>
         private Stmt VarDeclaration()
         {
+            if (_debug) Console.WriteLine("VarDeclaration()");
+
             Token name = Consume(IDENTIFIER, "Expect variable name.");
 
-            Expr initializer = null;
+            Expr initialiser = null;
             if (Match(EQUAL))
             {
-                initializer = Expression();
+                initialiser = Expression();
             }
 
             Consume(SEMICOLON, "Expect ';' after variable declaration.");
             
-            return new Var(name, initializer);
+            return new Var(name, initialiser);
         }
 
         /// <summary>
@@ -122,10 +139,40 @@ namespace Lox
         /// <returns></returns>
         private Stmt ExpressionStatement()
         {
+            if (_debug) Console.WriteLine("ExpressionStatement()");
+
             var expr = Expression();
             Consume(SEMICOLON, "Expect ';' after expression.");
 
             return new Expression(expr);
+        }
+
+        /// <summary>
+        /// Parses an assignment expression.
+        /// </summary>
+        /// <returns></returns>
+        private Expr Assignment()
+        {
+            if (_debug) Console.WriteLine("Assignment()");
+
+            var expr = Equality();
+
+            if (Match(EQUAL))
+            {
+                var equals = Previous();
+                var value = Assignment();
+
+                if (expr is Variable variable)
+                {
+                    var name = variable.Name;
+                    
+                    return new Assign(name, value);
+                }
+
+                Error(equals, "Invalid assignment target.");
+            }
+
+            return expr;
         }
 
         /// <summary>
@@ -134,6 +181,8 @@ namespace Lox
         /// <returns></returns>
         private Expr Equality()
         {
+            if (_debug) Console.WriteLine("Equality()");
+
             var expr = Comparison();
 
             while(Match(BANG_EQUAL, EQUAL_EQUAL))
@@ -227,6 +276,8 @@ namespace Lox
         /// <exception cref="NotImplementedException"></exception>
         private Expr Comparison()
         {
+            if (_debug) Console.WriteLine("Comparison()");
+
             var expr = Term();
 
             while(Match(GREATER, GREATER_EQUAL, LESS, LESS_EQUAL))
@@ -245,6 +296,8 @@ namespace Lox
         /// <returns></returns>
         private Expr Term()
         {
+            if (_debug) Console.WriteLine("Term()");
+
             var factor = Factor();
 
             while(Match(MINUS, PLUS))
@@ -263,6 +316,8 @@ namespace Lox
         /// <returns></returns>
         private Expr Factor()
         {
+            if (_debug) Console.WriteLine("Factor()");
+
             var expr = Unary();
 
             while(Match(SLASH, STAR))
@@ -281,7 +336,9 @@ namespace Lox
         /// <returns></returns>
         private Expr Unary()
         {
-            while(Match(BANG, MINUS))
+            if (_debug) Console.WriteLine("Unary()");
+
+            while (Match(BANG, MINUS))
             {
                 Token op = Previous();
                 var right = Unary();
@@ -297,6 +354,8 @@ namespace Lox
         /// <returns></returns>
         private Expr Primary()
         {
+            if (_debug) Console.WriteLine("Primary()");
+
             if (Match(FALSE))
             {
                 return new Literal(false);
@@ -367,6 +426,8 @@ namespace Lox
         /// </summary>
         private void Synchronise()
         {
+            if (_debug) Console.WriteLine("Synchronise()");
+
             Advance();
 
             while (!IsAtEnd())

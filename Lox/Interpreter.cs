@@ -8,6 +8,11 @@ namespace Lox
     public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<object>
     {
         /// <summary>
+        /// Enables or disables debug output.
+        /// </summary>
+        private const bool _debug = true;
+
+        /// <summary>
         /// The environment that holds variable bindings.
         /// </summary>
         private readonly Environment _environment = new();
@@ -18,6 +23,8 @@ namespace Lox
         /// <param name="statements"></param>
         public void Interpret(List<Stmt> statements)
         {
+            if (_debug) Console.WriteLine("Interpret()");
+
             try
             {
                 foreach (var stmt in statements)
@@ -38,6 +45,8 @@ namespace Lox
         /// <returns></returns>
         public object VisitLiteralExpr(Literal expr)
         {
+            if (_debug) Console.WriteLine($"VisitLiteralExpr(): {expr.Value}");
+
             return expr.Value;
         }
 
@@ -48,6 +57,8 @@ namespace Lox
         /// <returns></returns>
         public object VisitGroupingExpr(Grouping expr)
         {
+            if (_debug) Console.WriteLine($"VisitGroupingExpr(): {expr.Expression}");
+
             return Evaluate(expr.Expression);
         }
 
@@ -58,6 +69,8 @@ namespace Lox
         /// <returns></returns>
         public object VisitUnaryExpr(Unary expr)
         {
+            if (_debug) Console.WriteLine($"VisitUnaryExpr(): {expr.Op} {expr.Right}");
+
             var right = Evaluate(expr.Right);
 
             switch (expr.Op.Type)
@@ -80,6 +93,8 @@ namespace Lox
         /// <returns></returns>
         public object VisitVariableExpr(Variable expr)
         {
+            if (_debug) Console.WriteLine($"VisitVariableExpr(): {expr.Name}");
+
             return _environment.Get(expr.Name);
         }
 
@@ -90,6 +105,8 @@ namespace Lox
         /// <returns></returns>
         public object VisitBinaryExpr(Binary expr)
         {
+            if (_debug) Console.WriteLine($"VisitBinaryExpr(): {expr.Left} {expr.Op} {expr.Right}");
+
             var left = Evaluate(expr.Left);
             var right = Evaluate(expr.Right);
 
@@ -150,6 +167,8 @@ namespace Lox
         /// <returns></returns>
         private object Evaluate(Expr expr)
         {
+            if (_debug) Console.WriteLine("Evaluate()");
+
             return expr.Accept(this);
         }
 
@@ -159,6 +178,8 @@ namespace Lox
         /// <param name="stmt"></param>
         private void Execute(Stmt stmt)
         {
+            if (_debug) Console.WriteLine("Execute()");
+            
             stmt.Accept(this);
         }
 
@@ -168,6 +189,8 @@ namespace Lox
         /// <param name="stmt"></param>
         public object VisitExpressionStmt(Expression stmt)
         {
+            if (_debug) Console.WriteLine($"VisitExpressionStmt(): {stmt.Expr}");
+
             Evaluate(stmt.Expr);
 
             return null;
@@ -179,6 +202,8 @@ namespace Lox
         /// <param name="stmt"></param>
         public object VisitPrintStmt(Print stmt)
         {
+            if (_debug) Console.WriteLine($"VisitPrintStmt(): {stmt.Expr}");
+
             var value = Evaluate(stmt.Expr);
             Console.WriteLine(Stringify(value));
 
@@ -192,6 +217,8 @@ namespace Lox
         /// <returns></returns>
         public object VisitVarStmt(Var stmt)
         {
+            if (_debug) Console.WriteLine($"VisitVarStmt(): {stmt.Name}");
+
             object value = null;
             if (stmt.Initialiser != null)
             {
@@ -201,6 +228,16 @@ namespace Lox
             _environment.Define(stmt.Name.Lexeme, value);
 
             return null;
+        }
+
+        public object VisitAssignExpr(Assign expr)
+        {
+            if (_debug) Console.WriteLine($"VisitAssignExpr(): {expr.Name} = {expr.Value}");
+
+            var value = Evaluate(expr.Value);
+            _environment.Assign(expr.Name, value);
+            
+            return value;
         }
 
         /// <summary>

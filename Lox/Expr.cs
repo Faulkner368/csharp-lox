@@ -30,6 +30,11 @@ namespace Lox
         public interface IVisitor<T>
         {
             /// <summary>
+            /// Visit a <see cref="Assign"/> expression node.
+            /// </summary>
+            T VisitAssignExpr(Assign expr);
+
+            /// <summary>
             /// Visit a <see cref="Binary"/> expression node.
             /// </summary>
             T VisitBinaryExpr(Binary expr);
@@ -54,6 +59,40 @@ namespace Lox
             /// </summary>
             T VisitVariableExpr(Variable expr);
 
+        }
+    }
+
+    /// <summary>
+    /// Represents a Assign expression in the abstract syntax tree (AST)
+    /// </summary>
+    public class Assign : Expr
+    {
+        public Token Name;
+
+        public Expr Value;
+
+        public Assign(Token name, Expr value)        {
+            Name = name;
+            Value = value;
+        }
+
+        /// <summary>
+        /// Accepts a visitor and dispatches the call to
+        /// <see cref="IVisitor{T}.VisitAssignExpr(Assign)"/> so the visitor
+        /// can perform an operation specific to a binary expression node.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The return type produced by the visitor’s operation.
+        /// </typeparam>
+        /// <param name="visitor">
+        /// The visitor instance performing the operation.
+        /// </param>
+        /// <returns>
+        /// The result of the visitor’s operation.
+        /// </returns>
+        public override T Accept<T>(IVisitor<T> visitor)
+        {
+            return visitor.VisitAssignExpr(this);
         }
     }
 

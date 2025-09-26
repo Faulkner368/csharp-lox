@@ -35,5 +35,22 @@
             
             throw new RuntimeError(null, $"Undefined variable '{token.Lexeme}'.");
         }
+
+        /// <summary>
+        /// Assigns a value to an existing variable in the environment.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="value"></param>
+        /// <exception cref="RuntimeError"></exception>
+        public void Assign(Token token, object value)
+        {
+            if (_values.ContainsKey(token.Lexeme))
+            {
+                _values[token.Lexeme] = value;
+                return;
+            }
+
+            throw new RuntimeError(token, $"Undefined variable '{token.Lexeme}'.");
+        }
     }
 }
