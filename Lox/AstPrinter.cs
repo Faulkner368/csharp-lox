@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.IO;
+using System.Text;
 
 namespace Lox
 {
@@ -76,7 +77,22 @@ namespace Lox
         public string VisitAssignExpr(Assign expr)
         {
             return Parenthesise("assign " + expr.Name.Lexeme, expr.Value);
-        }   
+        }
+
+        /// <summary>
+        /// Visits a logical expression
+        /// </summary>
+        /// <param name="expr"></param>
+        /// <returns></returns>
+        public string VisitLogicalExpr(Logical expr)
+        {
+            return Parenthesise(expr.Op.Lexeme, expr.Left, expr.Right);
+        }
+
+        public string VisitCallExpr(Call expr)
+        {
+            return Parenthesise2("call", expr.Callee, expr.Arguments);
+        }
 
         /// <summary>
         /// Parenthesises the expression
@@ -96,6 +112,30 @@ namespace Lox
             }
 
             builder.Append(")");
+            return builder.ToString();
+        }
+
+        /// <summary>
+        /// Parenthesises the expression with one required and multiple additional expressions
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="expr"></param>
+        /// <param name="exprs"></param>
+        /// <returns></returns>
+        private string Parenthesise2(string name, Expr expr, List<Expr> exprs)
+        {
+            var builder = new StringBuilder();
+            builder.Append("(").Append(name).Append(" ");
+            builder.Append(expr.Accept(this));
+         
+            foreach (var e in exprs)
+            {
+                builder.Append(" ");
+                builder.Append(e.Accept(this));
+            
+            }
+            builder.Append(")");
+            
             return builder.ToString();
         }
 

@@ -54,6 +54,11 @@ namespace Lox
             /// </summary>
             T VisitVarStmt(Var stmt);
 
+            /// <summary>
+            /// Visit a <see cref="While"/> statement node.
+            /// </summary>
+            T VisitWhileStmt(While stmt);
+
         }
     }
 
@@ -218,6 +223,40 @@ namespace Lox
         public override T Accept<T>(IVisitor<T> visitor)
         {
             return visitor.VisitVarStmt(this);
+        }
+    }
+
+    /// <summary>
+    /// Represents a While statement in the abstract syntax tree (AST)
+    /// </summary>
+    public class While : Stmt
+    {
+        public Expr Condition;
+
+        public Stmt Body;
+
+        public While(Expr condition, Stmt body)        {
+            Condition = condition;
+            Body = body;
+        }
+
+        /// <summary>
+        /// Accepts a visitor and dispatches the call to
+        /// <see cref="IVisitor{T}.VisitWhileStmt(While)"/> so the visitor
+        /// can perform an operation specific to a While node.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The return type produced by the visitor’s operation.
+        /// </typeparam>
+        /// <param name="visitor">
+        /// The visitor instance performing the operation.
+        /// </param>
+        /// <returns>
+        /// The result of the visitor’s operation.
+        /// </returns>
+        public override T Accept<T>(IVisitor<T> visitor)
+        {
+            return visitor.VisitWhileStmt(this);
         }
     }
 

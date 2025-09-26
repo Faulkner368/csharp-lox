@@ -13,9 +13,22 @@ namespace Lox
         private bool _debug = false;
 
         /// <summary>
+        /// The global environment that holds built-in functions.
+        /// </summary>
+        private readonly Environment _globals = new();
+
+        /// <summary>
         /// The environment that holds variable bindings.
         /// </summary>
         private Environment _environment = new();
+
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Interpreter"/> class.
+        /// </summary>
+        public Interpreter()
+        {
+            _globals.Define("clock", new ClockLoxCallable());
+        }
 
         /// <summary>
         /// Interprets a list of statements.
@@ -211,6 +224,40 @@ namespace Lox
         }
 
         /// <summary>
+        /// Visit a call expression node.
+        /// </summary>
+        /// <param name="expr"></param>
+        /// <returns></returns>
+        /// <exception cref="RuntimeError"></exception>
+        public object VisitCallExpr(Call expr)
+        {
+            if (_debug) Console.WriteLine($"VisitCallExpr(): {expr.Callee}({string.Join(", ", expr.Arguments)})");
+            
+            var callee = Evaluate(expr.Callee);
+            
+            var arguments = new List<object>();
+            foreach (var argument in expr.Arguments)
+            {
+                arguments.Add(Evaluate(argument));
+            
+            }
+            
+            if (callee is not ILoxCallable)
+            {
+                throw new RuntimeError(expr.Paren, "Can only call functions and classes.");
+            }
+
+            var function = (LoxFunction)callee;
+
+            if (arguments.Count != function.Arity())
+            {
+                throw new RuntimeError(expr.Paren, $"Expected {function.Arity()} arguments but got {arguments.Count}.");
+            }
+
+            return function.Call(this, arguments);
+        }
+
+        /// <summary>
         /// Evaluates the given expression and returns the result.
         /// </summary>
         /// <param name="expr"></param>
@@ -339,6 +386,29 @@ namespace Lox
             return null;
         }
 
+        /// <summary>
+        /// Visit a while statement node.
+        /// </summary>
+        /// <param name="stmt"></param>
+        /// <returns></returns>
+        public object VisitWhileStmt(While stmt)
+        {
+            
+            if (_debug) Console.WriteLine($"VisitWhileStmt(): {stmt.Condition} {{ {stmt.Body} }}");
+            
+            while (IsTruthy(Evaluate(stmt.Condition)))
+            {
+                Execute(stmt.Body);
+            }
+            
+            return null;
+        }
+
+        /// <summary>
+        /// Visit a assign statement node.
+        /// </summary>
+        /// <param name="expr"></param>
+        /// <returns></returns>
         public object VisitAssignExpr(Assign expr)
         {
             if (_debug) Console.WriteLine($"VisitAssignExpr(): {expr.Name} = {expr.Value}");

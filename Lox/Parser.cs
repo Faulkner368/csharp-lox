@@ -100,6 +100,11 @@ namespace Lox
         {
             if (_debug) Console.WriteLine("Statement()");
 
+            if (Match(FOR))
+            {
+                return ForStatement();
+            }
+
             if (Match(IF))
             {
                 return IfStatement();
@@ -110,12 +115,83 @@ namespace Lox
                 return PrintStatement();
             }
 
+            if (Match(WHILE))
+            {
+                return WhileStatement();
+            }
+
             if (Match(LEFT_BRACE))
             {
                 return new Block(Block());
             }
 
             return ExpressionStatement();
+        }
+
+        /// <summary>
+        /// Parses a for statement.
+        /// </summary>
+        /// <returns></returns>
+        private Stmt ForStatement()
+        {
+            if (_debug) Console.WriteLine("ForStatement()");
+            
+            Consume(LEFT_PAREN, "Expect '(' after 'for'.");
+            
+            Stmt initialiser;
+            if (Match(SEMICOLON))
+            {
+                initialiser = null;
+            }
+            else if (Match(VAR))
+            {
+                initialiser = VarDeclaration();
+            }
+            else
+            {
+                initialiser = ExpressionStatement();
+            }
+
+            Expr condition = null;
+            if (!Check(SEMICOLON))
+            {
+                condition = Expression();
+            }
+            
+            Consume(SEMICOLON, "Expect ';' after loop condition.");
+            
+            Expr increment = null;
+            if (!Check(RIGHT_PAREN))
+            {
+                increment = Expression();
+            }
+            
+            Consume(RIGHT_PAREN, "Expect ')' after for clauses.");
+            
+            var body = Statement();
+            
+            if (increment != null)
+            {
+                body = new Block(new List<Stmt>
+                {
+                    body,
+                    new Expression(increment)
+                });
+            }
+            
+            if (condition == null)
+            {
+                condition = new Literal(true);
+            }
+            
+            body = new While(condition, body);
+            
+            if (initialiser != null)
+            {
+                body = new Block(new List<Stmt> { initialiser, body });
+            }
+            
+            return body;
         }
 
         /// <summary>
@@ -173,6 +249,22 @@ namespace Lox
             Consume(SEMICOLON, "Expect ';' after variable declaration.");
             
             return new Var(name, initialiser);
+        }
+
+        /// <summary>
+        /// Parses a while statement.
+        /// </summary>
+        /// <returns></returns>
+        private Stmt WhileStatement()
+        {
+            if (_debug) Console.WriteLine("WhileStatement()");
+            
+            Consume(LEFT_PAREN, "Expect '(' after 'while'.");
+            var condition = Expression();
+            Consume(RIGHT_PAREN, "Expect ')' after condition.");
+            var body = Statement();
+            
+            return new While(condition, body);
         }
 
         /// <summary>
@@ -455,7 +547,62 @@ namespace Lox
                 return new Unary(op, right);
             }
 
-            return Primary();
+            return Call();
+        }
+
+        /// <summary>
+        /// Finishes parsing a function call expression.
+        /// </summary>
+        /// <param name="callee"></param>
+        /// <returns></returns>
+        private Expr FinishCall(Expr callee)
+        {
+            if (_debug) Console.WriteLine("FinishCall()");
+            
+            var arguments = new List<Expr>();
+            
+            if (!Check(RIGHT_PAREN))
+            {
+                do
+                {
+                    if (arguments.Count >= 255)
+                    {
+                        Error(Peek(), "Can't have more than 255 arguments.");
+                    }
+            
+                    arguments.Add(Expression());
+
+                } while (Match(COMMA));
+            }
+            
+            var paren = Consume(RIGHT_PAREN, "Expect ')' after arguments.");
+            
+            return new Call(callee, paren, arguments);
+        }
+
+        /// <summary>
+        /// Parses a function call expression.
+        /// </summary>
+        /// <returns></returns>
+        private Expr Call()
+        {
+            if (_debug) Console.WriteLine("Call()");
+            
+            var expr = Primary();
+            
+            while (true)
+            {
+                if (Match(LEFT_PAREN))
+                {
+                    expr = FinishCall(expr);
+                }
+                else
+                {
+                    break;
+                }
+            }
+            
+            return expr;
         }
 
         /// <summary>

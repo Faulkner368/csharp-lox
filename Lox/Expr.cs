@@ -40,6 +40,11 @@ namespace Lox
             T VisitBinaryExpr(Binary expr);
 
             /// <summary>
+            /// Visit a <see cref="Call"/> expression node.
+            /// </summary>
+            T VisitCallExpr(Call expr);
+
+            /// <summary>
             /// Visit a <see cref="Grouping"/> expression node.
             /// </summary>
             T VisitGroupingExpr(Grouping expr);
@@ -135,6 +140,43 @@ namespace Lox
         public override T Accept<T>(IVisitor<T> visitor)
         {
             return visitor.VisitBinaryExpr(this);
+        }
+    }
+
+    /// <summary>
+    /// Represents a Call expression in the abstract syntax tree (AST)
+    /// </summary>
+    public class Call : Expr
+    {
+        public Expr Callee;
+
+        public Token Paren;
+
+        public List<Expr> Arguments;
+
+        public Call(Expr callee, Token paren, List<Expr> arguments)        {
+            Callee = callee;
+            Paren = paren;
+            Arguments = arguments;
+        }
+
+        /// <summary>
+        /// Accepts a visitor and dispatches the call to
+        /// <see cref="IVisitor{T}.VisitCallExpr(Call)"/> so the visitor
+        /// can perform an operation specific to a Call node.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The return type produced by the visitor’s operation.
+        /// </typeparam>
+        /// <param name="visitor">
+        /// The visitor instance performing the operation.
+        /// </param>
+        /// <returns>
+        /// The result of the visitor’s operation.
+        /// </returns>
+        public override T Accept<T>(IVisitor<T> visitor)
+        {
+            return visitor.VisitCallExpr(this);
         }
     }
 
