@@ -43,6 +43,23 @@
         }
 
         /// <summary>
+        /// Returns the ancestor environment at the given distance.
+        /// </summary>
+        /// <param name="distance"></param>
+        /// <returns></returns>
+        public Environment Ancestor(int distance)
+        {
+            var environment = this;
+
+            for (var i = 0; i < distance; i++)
+            {
+                environment = environment._enclosing;
+            }
+            
+            return environment;
+        }
+
+        /// <summary>
         /// Gets the value of a variable from the environment.
         /// </summary>
         /// <param name="name"></param>
@@ -61,6 +78,17 @@
             }
 
             throw new RuntimeError(null, $"Undefined variable '{name.Lexeme}'.");
+        }
+
+        /// <summary>
+        /// Gets the value of a variable from an ancestor environment at the given distance.
+        /// </summary>
+        /// <param name="distance"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public object GetAt(int distance, string name)
+        {
+            return Ancestor(distance)._values[name];
         }
 
         /// <summary>
@@ -84,6 +112,17 @@
             }
 
             throw new RuntimeError(token, $"Undefined variable '{token.Lexeme}'.");
+        }
+
+        /// <summary>
+        /// Assigns a value to a variable in an ancestor environment at the given distance.
+        /// </summary>
+        /// <param name="distance"></param>
+        /// <param name="name"></param>
+        /// <param name="value"></param>
+        public void AssignAt(int distance, Token name, object value)
+        {
+            Ancestor(distance)._values[name.Lexeme] = value;
         }
     }
 }

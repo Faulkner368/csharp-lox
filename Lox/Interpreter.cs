@@ -23,6 +23,11 @@ namespace Lox
         private Environment _environment;
 
         /// <summary>
+        /// A mapping of expressions to their resolved depth in the environment chain.
+        /// </summary>
+        private readonly Dictionary<Expr, int> _locals = new();
+
+        /// <summary>
         /// Initialises a new instance of the <see cref="Interpreter"/> class.
         /// </summary>
         public Interpreter()
@@ -158,7 +163,19 @@ namespace Lox
         {
             if (_debug) Console.WriteLine($"VisitVariableExpr(): {expr.Name}");
 
-            return _environment.Get(expr.Name);
+            return LookUpVariable(expr.Name, expr);
+        }
+
+        private object LookUpVariable(Token name, Expr expr)
+        {
+            if (_locals.TryGetValue(expr, out int distance))
+            {
+                return _environment.GetAt(distance, name.Lexeme);
+            }
+            else
+            {
+                return Globals.Get(name);
+            }
         }
 
         /// <summary>
@@ -275,6 +292,16 @@ namespace Lox
             if (_debug) Console.WriteLine("Execute()");
             
             stmt.Accept(this);
+        }
+
+        /// <summary>
+        /// Resolves a variable expression to a specific depth in the environment chain.
+        /// </summary>
+        /// <param name="expr"></param>
+        /// <param name="depth"></param>
+        public void Resolve(Expr expr, int depth)
+        {
+            _locals[expr] = depth;  
         }
 
         /// <summary>
@@ -448,8 +475,16 @@ namespace Lox
             if (_debug) Console.WriteLine($"VisitAssignExpr(): {expr.Name} = {expr.Value}");
 
             var value = Evaluate(expr.Value);
-            _environment.Assign(expr.Name, value);
             
+            if (_locals.TryGetValue(expr, out int distance))
+            {
+                _environment.AssignAt(distance, expr.Name, value);
+            }
+            else
+            {
+                Globals.Assign(expr.Name, value);
+            }
+
             return value;
         }
 

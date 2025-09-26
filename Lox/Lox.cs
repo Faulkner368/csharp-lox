@@ -118,6 +118,14 @@ namespace Lox
                 return;
             }
 
+            var resolver = new Resolver(_interpreter);
+            resolver.Resolve(statements);
+
+            if (_hadError)
+            {
+                return;
+            }
+
             _interpreter.Interpret(statements);
         }
 

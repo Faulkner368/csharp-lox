@@ -43,7 +43,7 @@
         /// <returns></returns>
         public object Call(Interpreter interpreter, List<object> arguments)
         {
-            var environment = new Environment(interpreter.Globals);
+            var environment = new Environment(_closure);
 
             for (var i = 0; i < _declaration.Parameters.Count; i++)
             {

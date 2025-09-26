@@ -53,4 +53,13 @@
         
         EOF
     }
+
+    /// <summary>
+    /// The type of function we are currently resolving
+    /// </summary>
+    public enum FunctionType
+    {
+        NONE,
+        FUNCTION
+    }
 }
