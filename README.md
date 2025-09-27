@@ -25,29 +25,36 @@ This implementation includes:
 
 ## 📂 Project Structure
 
-├─ Lox/
-│ ├─ AstPrinter.cs
-│ ├─ Enums.cs
-│ ├─ Environment.cs
-│ ├─ Errors.cs
-│ ├─ Expr.cs
-│ ├─ ILoxCallable.cs
-│ ├─ Interpreter.cs
-│ ├─ Lox.cs
-│ ├─ Lox.csproj
-│ ├─ LoxClass.cs
-│ ├─ LoxFunction.cs
-│ ├─ LoxInstance.cs
-│ ├─ NativeFunctions.cs
-│ ├─ Parser.cs
-│ ├─ Resolver.cs
-│ ├─ ReturnException.cs
-│ ├─ Scanner.cs
-│ ├─ Stmt.cs
-│ └─ Token.cs
-├─ Tools/
-├─ Extensions.cs
-└─ GenerateAst.cs
+Lox.sln
+├── Lox/
+│   ├── AstPrinter.cs
+│   ├── Enums.cs
+│   ├── Environment.cs
+│   ├── Errors.cs
+│   ├── Expr.cs
+│   ├── ILoxCallable.cs
+│   ├── Interpreter.cs
+│   ├── Lox.cs
+│   ├── Lox.csproj
+│   ├── LoxClass.cs
+│   ├── LoxFunction.cs
+│   ├── LoxInstance.cs
+│   ├── NativeFunctions.cs
+│   ├── Parser.cs
+│   ├── Resolver.cs
+│   ├── ReturnException.cs
+│   ├── Scanner.cs
+│   ├── Stmt.cs
+│   └── Token.cs
+│
+├── Tools/
+│   ├── Extensions.cs
+│   └── GenerateAst.cs
+│
+└── Lox.Tests/
+    ├── Lox.Tests.csproj
+    ├── TestHelper.cs
+    └── UnitTests.cs
 
 ---
 
