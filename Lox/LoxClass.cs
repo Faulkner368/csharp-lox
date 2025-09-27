@@ -13,7 +13,7 @@
         /// <summary>
         /// The superclass of the class, if any
         /// </summary>
-        public readonly LoxClass Superclass;
+        public readonly LoxClass? Superclass;
 
         /// <summary>
         /// The methods of the class
@@ -24,7 +24,7 @@
         /// Creates a new Lox class
         /// </summary>
         /// <param name="name"></param>
-        public LoxClass(string name, LoxClass superclass, Dictionary<string, LoxFunction> methods)
+        public LoxClass(string name, LoxClass? superclass, Dictionary<string, LoxFunction> methods)
         {
             Name = name;
             Superclass = superclass;
@@ -36,7 +36,7 @@
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public LoxFunction FindMethod(string name)
+        public LoxFunction? FindMethod(string name)
         {
             if (_methods.ContainsKey(name))
             {

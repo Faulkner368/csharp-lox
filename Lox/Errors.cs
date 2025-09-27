@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Lox
+﻿namespace Lox
 {
     /// <summary>
     /// Indicates a parse error.
@@ -19,14 +13,14 @@ namespace Lox
         /// <summary>
         /// The token where the error occurred.
         /// </summary>
-        public Token Token { get; }
+        public Token? Token { get; }
 
         /// <summary>
         /// Creates a new runtime error.
         /// </summary>
         /// <param name="token"></param>
         /// <param name="message"></param>
-        public RuntimeError(Token token, string message) : base(message)
+        public RuntimeError(Token? token, string message) : base(message)
         {
             Token = token;
         }

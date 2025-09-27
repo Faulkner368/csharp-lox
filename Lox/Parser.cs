@@ -33,6 +33,10 @@ namespace Lox
         /// </summary>
         private int _current = 0;
 
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Parser"/> class.
+        /// </summary>
+        /// <param name="tokens"></param>
         public Parser(List<Token> tokens)
         {
             _tokens = tokens;
@@ -50,7 +54,7 @@ namespace Lox
 
             while(!IsAtEnd())
             {
-                statements.Add(Declaration());
+                statements.Add(Declaration()!);
             }
 
             return statements;
@@ -71,7 +75,7 @@ namespace Lox
         /// Parses a declaration.
         /// </summary>
         /// <returns></returns>
-        private Stmt Declaration()
+        private Stmt? Declaration()
         {
             if (_debug) Console.WriteLine("Declaration()");
 
@@ -106,7 +110,7 @@ namespace Lox
         {
             var name = Consume(IDENTIFIER, "Expect class name.");
 
-            Variable superclass = null;
+            Variable? superclass = null;
             if (Match(LESS))
             {
                 Consume(IDENTIFIER, "Expect superclass name.");
@@ -177,7 +181,7 @@ namespace Lox
             
             Consume(LEFT_PAREN, "Expect '(' after 'for'.");
             
-            Stmt initialiser;
+            Stmt? initialiser;
             if (Match(SEMICOLON))
             {
                 initialiser = null;
@@ -191,7 +195,7 @@ namespace Lox
                 initialiser = ExpressionStatement();
             }
 
-            Expr condition = null;
+            Expr? condition = null;
             if (!Check(SEMICOLON))
             {
                 condition = Expression();
@@ -199,7 +203,7 @@ namespace Lox
             
             Consume(SEMICOLON, "Expect ';' after loop condition.");
             
-            Expr increment = null;
+            Expr? increment = null;
             if (!Check(RIGHT_PAREN))
             {
                 increment = Expression();
@@ -246,7 +250,7 @@ namespace Lox
             Consume(RIGHT_PAREN, "Expect ')' after if condition.");
             
             var thenBranch = Statement();
-            Stmt elseBranch = null;
+            Stmt? elseBranch = null;
             if (Match(ELSE))
             {
                 elseBranch = Statement();
@@ -277,7 +281,7 @@ namespace Lox
         {
             var keyword = Previous();
             
-            Expr value = null;
+            Expr? value = null;
             if (!Check(SEMICOLON))
             {
                 value = Expression();
@@ -298,7 +302,7 @@ namespace Lox
 
             Token name = Consume(IDENTIFIER, "Expect variable name.");
 
-            Expr initialiser = null;
+            Expr? initialiser = null;
             if (Match(EQUAL))
             {
                 initialiser = Expression();
@@ -395,7 +399,7 @@ namespace Lox
             
             while (!Check(RIGHT_BRACE) && !IsAtEnd())
             {
-                statements.Add(Declaration());
+                statements.Add(Declaration()!);
             }
             
             Consume(RIGHT_BRACE, "Expect '}' after block.");
@@ -837,7 +841,7 @@ namespace Lox
             var statements = new List<Stmt>();
             while (!IsAtEnd())
             {
-                statements.Add(Declaration());
+                statements.Add(Declaration()!);
 
                 if (_foundExpression)
                 {

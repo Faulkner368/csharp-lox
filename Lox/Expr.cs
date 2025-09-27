@@ -32,62 +32,62 @@ namespace Lox
             /// <summary>
             /// Visit a <see cref="Assign"/> expression node.
             /// </summary>
-            T VisitAssignExpr(Assign expr);
+            T? VisitAssignExpr(Assign expr);
 
             /// <summary>
             /// Visit a <see cref="Binary"/> expression node.
             /// </summary>
-            T VisitBinaryExpr(Binary expr);
+            T? VisitBinaryExpr(Binary expr);
 
             /// <summary>
             /// Visit a <see cref="Call"/> expression node.
             /// </summary>
-            T VisitCallExpr(Call expr);
+            T? VisitCallExpr(Call expr);
 
             /// <summary>
             /// Visit a <see cref="Get"/> expression node.
             /// </summary>
-            T VisitGetExpr(Get expr);
+            T? VisitGetExpr(Get expr);
 
             /// <summary>
             /// Visit a <see cref="Grouping"/> expression node.
             /// </summary>
-            T VisitGroupingExpr(Grouping expr);
+            T? VisitGroupingExpr(Grouping expr);
 
             /// <summary>
             /// Visit a <see cref="Literal"/> expression node.
             /// </summary>
-            T VisitLiteralExpr(Literal expr);
+            T? VisitLiteralExpr(Literal expr);
 
             /// <summary>
             /// Visit a <see cref="Logical"/> expression node.
             /// </summary>
-            T VisitLogicalExpr(Logical expr);
+            T? VisitLogicalExpr(Logical expr);
 
             /// <summary>
             /// Visit a <see cref="Set"/> expression node.
             /// </summary>
-            T VisitSetExpr(Set expr);
+            T? VisitSetExpr(Set expr);
 
             /// <summary>
             /// Visit a <see cref="Super"/> expression node.
             /// </summary>
-            T VisitSuperExpr(Super expr);
+            T? VisitSuperExpr(Super expr);
 
             /// <summary>
             /// Visit a <see cref="This"/> expression node.
             /// </summary>
-            T VisitThisExpr(This expr);
+            T? VisitThisExpr(This expr);
 
             /// <summary>
             /// Visit a <see cref="Unary"/> expression node.
             /// </summary>
-            T VisitUnaryExpr(Unary expr);
+            T? VisitUnaryExpr(Unary expr);
 
             /// <summary>
             /// Visit a <see cref="Variable"/> expression node.
             /// </summary>
-            T VisitVariableExpr(Variable expr);
+            T? VisitVariableExpr(Variable expr);
 
         }
     }
@@ -122,7 +122,7 @@ namespace Lox
         /// </returns>
         public override T Accept<T>(IVisitor<T> visitor)
         {
-            return visitor.VisitAssignExpr(this);
+            return visitor.VisitAssignExpr(this)!;
         }
     }
 
@@ -159,7 +159,7 @@ namespace Lox
         /// </returns>
         public override T Accept<T>(IVisitor<T> visitor)
         {
-            return visitor.VisitBinaryExpr(this);
+            return visitor.VisitBinaryExpr(this)!;
         }
     }
 
@@ -196,7 +196,7 @@ namespace Lox
         /// </returns>
         public override T Accept<T>(IVisitor<T> visitor)
         {
-            return visitor.VisitCallExpr(this);
+            return visitor.VisitCallExpr(this)!;
         }
     }
 
@@ -230,7 +230,7 @@ namespace Lox
         /// </returns>
         public override T Accept<T>(IVisitor<T> visitor)
         {
-            return visitor.VisitGetExpr(this);
+            return visitor.VisitGetExpr(this)!;
         }
     }
 
@@ -261,7 +261,7 @@ namespace Lox
         /// </returns>
         public override T Accept<T>(IVisitor<T> visitor)
         {
-            return visitor.VisitGroupingExpr(this);
+            return visitor.VisitGroupingExpr(this)!;
         }
     }
 
@@ -270,9 +270,9 @@ namespace Lox
     /// </summary>
     public class Literal : Expr
     {
-        public object Value;
+        public object? Value;
 
-        public Literal(object value)        {
+        public Literal(object? value)        {
             Value = value;
         }
 
@@ -292,7 +292,7 @@ namespace Lox
         /// </returns>
         public override T Accept<T>(IVisitor<T> visitor)
         {
-            return visitor.VisitLiteralExpr(this);
+            return visitor.VisitLiteralExpr(this)!;
         }
     }
 
@@ -329,7 +329,7 @@ namespace Lox
         /// </returns>
         public override T Accept<T>(IVisitor<T> visitor)
         {
-            return visitor.VisitLogicalExpr(this);
+            return visitor.VisitLogicalExpr(this)!;
         }
     }
 
@@ -366,7 +366,7 @@ namespace Lox
         /// </returns>
         public override T Accept<T>(IVisitor<T> visitor)
         {
-            return visitor.VisitSetExpr(this);
+            return visitor.VisitSetExpr(this)!;
         }
     }
 
@@ -400,7 +400,7 @@ namespace Lox
         /// </returns>
         public override T Accept<T>(IVisitor<T> visitor)
         {
-            return visitor.VisitSuperExpr(this);
+            return visitor.VisitSuperExpr(this)!;
         }
     }
 
@@ -431,7 +431,7 @@ namespace Lox
         /// </returns>
         public override T Accept<T>(IVisitor<T> visitor)
         {
-            return visitor.VisitThisExpr(this);
+            return visitor.VisitThisExpr(this)!;
         }
     }
 
@@ -465,7 +465,7 @@ namespace Lox
         /// </returns>
         public override T Accept<T>(IVisitor<T> visitor)
         {
-            return visitor.VisitUnaryExpr(this);
+            return visitor.VisitUnaryExpr(this)!;
         }
     }
 
@@ -496,7 +496,7 @@ namespace Lox
         /// </returns>
         public override T Accept<T>(IVisitor<T> visitor)
         {
-            return visitor.VisitVariableExpr(this);
+            return visitor.VisitVariableExpr(this)!;
         }
     }
 

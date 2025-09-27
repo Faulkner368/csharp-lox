@@ -1,6 +1,4 @@
-﻿using System.Data.Common;
-
-namespace Lox
+﻿namespace Lox
 {
     /// <summary>
     /// A scanner for the Lox programming language

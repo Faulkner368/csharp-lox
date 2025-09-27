@@ -16,6 +16,6 @@
         /// <param name="interpreter"></param>
         /// <param name="arguments"></param>
         /// <returns></returns>
-        object Call(Interpreter interpreter, List<object> arguments);
+        object? Call(Interpreter interpreter, List<object> arguments);
     }
 }

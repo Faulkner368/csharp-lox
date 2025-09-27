@@ -26,7 +26,7 @@
                 "Call     : Expr Callee, Token Paren, List<Expr> Arguments",
                 "Get      : Expr Obj, Token Name",
                 "Grouping : Expr Expression",
-                "Literal  : object Value",
+                "Literal  : object? Value",
                 "Logical  : Expr Left, Token Op, Expr Right",
                 "Set      : Expr Obj, Token Name, Expr Value",
                 "Super    : Token Keyword, Token Method",
@@ -38,13 +38,13 @@
             DefineAst(outputDir, "Stmt", new List<string>()
             {
                 "Block      : List<Stmt> Statements",
-                "Class      : Token Name, Variable Superclass, List<Function> Methods",
+                "Class      : Token Name, Variable? Superclass, List<Function> Methods",
                 "Expression : Expr Expr",
                 "Function   : Token Name, List<Token> Parameters, List<Stmt> Body",
                 "If         : Expr Condition, Stmt ThenBranch, Stmt? ElseBranch",
                 "Print      : Expr Expr",
-                "Return     : Token Keyword, Expr Value",
-                "Var        : Token Name, Expr Initialiser",
+                "Return     : Token Keyword, Expr? Value",
+                "Var        : Token Name, Expr? Initialiser",
                 "While      : Expr Condition, Stmt Body"
             }, "statement");
         }
@@ -61,9 +61,6 @@
             var path = Path.Combine(outputDir, $"{baseName}.cs");
             using var writer = new StreamWriter(path);
 
-            //writer.WriteLine("using System;");
-            //writer.WriteLine("using System.Collections.Generic;");
-            //writer.WriteLine();
             writer.WriteLine("namespace Lox");
             writer.WriteLine("{");
 
@@ -132,7 +129,7 @@
                 writer.WriteLine("            /// <summary>");
                 writer.WriteLine($"            /// Visit a <see cref=\"{typeName}\"/> {nodeType} node.");
                 writer.WriteLine("            /// </summary>");
-                writer.WriteLine($"            T Visit{typeName}{baseName}({typeName} {baseName.ToLower()});");
+                writer.WriteLine($"            T? Visit{typeName}{baseName}({typeName} {baseName.ToLower()});");
                 writer.WriteLine();
             }
             writer.WriteLine("        }");
@@ -206,7 +203,7 @@
             writer.WriteLine($"        /// </returns>");
             writer.WriteLine("        public override T Accept<T>(IVisitor<T> visitor)");
             writer.WriteLine("        {");
-            writer.WriteLine($"            return visitor.Visit{className}{baseName}(this);");
+            writer.WriteLine($"            return visitor.Visit{className}{baseName}(this)!;");
             writer.WriteLine("        }");
 
             writer.WriteLine("    }");

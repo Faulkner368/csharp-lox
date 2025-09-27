@@ -41,7 +41,7 @@
         /// <param name="interpreter"></param>
         /// <param name="arguments"></param>
         /// <returns></returns>
-        public object Call(Interpreter interpreter, List<object> arguments)
+        public object? Call(Interpreter interpreter, List<object> arguments)
         {
             var environment = new Environment(_closure);
 

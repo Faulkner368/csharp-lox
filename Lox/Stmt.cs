@@ -32,47 +32,47 @@ namespace Lox
             /// <summary>
             /// Visit a <see cref="Block"/> statement node.
             /// </summary>
-            T VisitBlockStmt(Block stmt);
+            T? VisitBlockStmt(Block stmt);
 
             /// <summary>
             /// Visit a <see cref="Class"/> statement node.
             /// </summary>
-            T VisitClassStmt(Class stmt);
+            T? VisitClassStmt(Class stmt);
 
             /// <summary>
             /// Visit a <see cref="Expression"/> statement node.
             /// </summary>
-            T VisitExpressionStmt(Expression stmt);
+            T? VisitExpressionStmt(Expression stmt);
 
             /// <summary>
             /// Visit a <see cref="Function"/> statement node.
             /// </summary>
-            T VisitFunctionStmt(Function stmt);
+            T? VisitFunctionStmt(Function stmt);
 
             /// <summary>
             /// Visit a <see cref="If"/> statement node.
             /// </summary>
-            T VisitIfStmt(If stmt);
+            T? VisitIfStmt(If stmt);
 
             /// <summary>
             /// Visit a <see cref="Print"/> statement node.
             /// </summary>
-            T VisitPrintStmt(Print stmt);
+            T? VisitPrintStmt(Print stmt);
 
             /// <summary>
             /// Visit a <see cref="Return"/> statement node.
             /// </summary>
-            T VisitReturnStmt(Return stmt);
+            T? VisitReturnStmt(Return stmt);
 
             /// <summary>
             /// Visit a <see cref="Var"/> statement node.
             /// </summary>
-            T VisitVarStmt(Var stmt);
+            T? VisitVarStmt(Var stmt);
 
             /// <summary>
             /// Visit a <see cref="While"/> statement node.
             /// </summary>
-            T VisitWhileStmt(While stmt);
+            T? VisitWhileStmt(While stmt);
 
         }
     }
@@ -104,7 +104,7 @@ namespace Lox
         /// </returns>
         public override T Accept<T>(IVisitor<T> visitor)
         {
-            return visitor.VisitBlockStmt(this);
+            return visitor.VisitBlockStmt(this)!;
         }
     }
 
@@ -115,11 +115,11 @@ namespace Lox
     {
         public Token Name;
 
-        public Variable Superclass;
+        public Variable? Superclass;
 
         public List<Function> Methods;
 
-        public Class(Token name, Variable superclass, List<Function> methods)        {
+        public Class(Token name, Variable? superclass, List<Function> methods)        {
             Name = name;
             Superclass = superclass;
             Methods = methods;
@@ -141,7 +141,7 @@ namespace Lox
         /// </returns>
         public override T Accept<T>(IVisitor<T> visitor)
         {
-            return visitor.VisitClassStmt(this);
+            return visitor.VisitClassStmt(this)!;
         }
     }
 
@@ -172,7 +172,7 @@ namespace Lox
         /// </returns>
         public override T Accept<T>(IVisitor<T> visitor)
         {
-            return visitor.VisitExpressionStmt(this);
+            return visitor.VisitExpressionStmt(this)!;
         }
     }
 
@@ -209,7 +209,7 @@ namespace Lox
         /// </returns>
         public override T Accept<T>(IVisitor<T> visitor)
         {
-            return visitor.VisitFunctionStmt(this);
+            return visitor.VisitFunctionStmt(this)!;
         }
     }
 
@@ -246,7 +246,7 @@ namespace Lox
         /// </returns>
         public override T Accept<T>(IVisitor<T> visitor)
         {
-            return visitor.VisitIfStmt(this);
+            return visitor.VisitIfStmt(this)!;
         }
     }
 
@@ -277,7 +277,7 @@ namespace Lox
         /// </returns>
         public override T Accept<T>(IVisitor<T> visitor)
         {
-            return visitor.VisitPrintStmt(this);
+            return visitor.VisitPrintStmt(this)!;
         }
     }
 
@@ -288,9 +288,9 @@ namespace Lox
     {
         public Token Keyword;
 
-        public Expr Value;
+        public Expr? Value;
 
-        public Return(Token keyword, Expr value)        {
+        public Return(Token keyword, Expr? value)        {
             Keyword = keyword;
             Value = value;
         }
@@ -311,7 +311,7 @@ namespace Lox
         /// </returns>
         public override T Accept<T>(IVisitor<T> visitor)
         {
-            return visitor.VisitReturnStmt(this);
+            return visitor.VisitReturnStmt(this)!;
         }
     }
 
@@ -322,9 +322,9 @@ namespace Lox
     {
         public Token Name;
 
-        public Expr Initialiser;
+        public Expr? Initialiser;
 
-        public Var(Token name, Expr initialiser)        {
+        public Var(Token name, Expr? initialiser)        {
             Name = name;
             Initialiser = initialiser;
         }
@@ -345,7 +345,7 @@ namespace Lox
         /// </returns>
         public override T Accept<T>(IVisitor<T> visitor)
         {
-            return visitor.VisitVarStmt(this);
+            return visitor.VisitVarStmt(this)!;
         }
     }
 
@@ -379,7 +379,7 @@ namespace Lox
         /// </returns>
         public override T Accept<T>(IVisitor<T> visitor)
         {
-            return visitor.VisitWhileStmt(this);
+            return visitor.VisitWhileStmt(this)!;
         }
     }
 

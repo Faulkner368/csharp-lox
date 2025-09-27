@@ -37,9 +37,9 @@
         /// </summary>
         /// <param name="name"></param>
         /// <param name="value"></param>
-        public void Define(string name, object value)
+        public void Define(string name, object? value)
         {
-            _values[name] = value;
+            _values[name] = value!;
         }
 
         /// <summary>
@@ -53,10 +53,10 @@
 
             for (var i = 0; i < distance; i++)
             {
-                environment = environment.Enclosing;
+                environment = environment!.Enclosing;
             }
             
-            return environment;
+            return environment!;
         }
 
         /// <summary>

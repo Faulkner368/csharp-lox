@@ -62,7 +62,7 @@ namespace Lox
         /// </summary>
         /// <param name="expression"></param>
         /// <returns></returns>
-        public string Interpret(Expr expression)
+        public string? Interpret(Expr expression)
         {
             try
             {
@@ -82,7 +82,7 @@ namespace Lox
         /// </summary>
         /// <param name="expr"></param>
         /// <returns></returns>
-        public object VisitLiteralExpr(Literal expr)
+        public object? VisitLiteralExpr(Literal expr)
         {
             if (_debug) Console.WriteLine($"VisitLiteralExpr(): {expr.Value}");
 
@@ -94,7 +94,7 @@ namespace Lox
         /// </summary>
         /// <param name="expr"></param>
         /// <returns></returns>
-        public object VisitLogicalExpr(Logical expr)
+        public object? VisitLogicalExpr(Logical expr)
         {
             if (_debug) Console.WriteLine($"VisitLogicalExpr(): {expr.Left} {expr.Op} {expr.Right}");
             
@@ -124,7 +124,7 @@ namespace Lox
         /// <param name="expr"></param>
         /// <returns></returns>
         /// <exception cref="RuntimeError"></exception>
-        public object VisitSetExpr(Set expr)
+        public object? VisitSetExpr(Set expr)
         {
             if (_debug) Console.WriteLine($"VisitSetExpr(): {expr.Obj}.{expr.Name} = {expr.Value}");
             
@@ -147,7 +147,7 @@ namespace Lox
         /// <param name="expr"></param>
         /// <returns></returns>
         /// <exception cref="RuntimeError"></exception>
-        public object VisitSuperExpr(Super expr)
+        public object? VisitSuperExpr(Super expr)
         {
             var distance = _locals[expr];
 
@@ -170,7 +170,7 @@ namespace Lox
         /// </summary>
         /// <param name="expr"></param>
         /// <returns></returns>
-        public object VisitThisExpr(This expr)
+        public object? VisitThisExpr(This expr)
         {
             if (_debug) Console.WriteLine($"VisitThisExpr(): {expr.Keyword}");
             
@@ -182,7 +182,7 @@ namespace Lox
         /// </summary>
         /// <param name="expr"></param>
         /// <returns></returns>
-        public object VisitGroupingExpr(Grouping expr)
+        public object? VisitGroupingExpr(Grouping expr)
         {
             if (_debug) Console.WriteLine($"VisitGroupingExpr(): {expr.Expression}");
 
@@ -194,7 +194,7 @@ namespace Lox
         /// </summary>
         /// <param name="expr"></param>
         /// <returns></returns>
-        public object VisitUnaryExpr(Unary expr)
+        public object? VisitUnaryExpr(Unary expr)
         {
             if (_debug) Console.WriteLine($"VisitUnaryExpr(): {expr.Op} {expr.Right}");
 
@@ -218,7 +218,7 @@ namespace Lox
         /// </summary>
         /// <param name="expr"></param>
         /// <returns></returns>
-        public object VisitVariableExpr(Variable expr)
+        public object? VisitVariableExpr(Variable expr)
         {
             if (_debug) Console.WriteLine($"VisitVariableExpr(): {expr.Name}");
 
@@ -243,7 +243,7 @@ namespace Lox
         /// <param name="expr"></param>
         /// <returns></returns>
         /// <exception cref="RuntimeError"></exception>"
-        public object VisitBinaryExpr(Binary expr)
+        public object? VisitBinaryExpr(Binary expr)
         {
             if (_debug) Console.WriteLine($"VisitBinaryExpr(): {expr.Left} {expr.Op} {expr.Right}");
 
@@ -272,9 +272,6 @@ namespace Lox
                     }
 
                     throw new RuntimeError(expr.Op, "Operands must be two numbers or two strings.");
-
-                    break;
-
                 case GREATER:
                     CheckNumberOperands(expr.Op, left, right);
                     return (double)left > (double)right;
@@ -304,7 +301,7 @@ namespace Lox
         /// <param name="expr"></param>
         /// <returns></returns>
         /// <exception cref="RuntimeError"></exception>
-        public object VisitCallExpr(Call expr)
+        public object? VisitCallExpr(Call expr)
         {
             if (_debug) Console.WriteLine($"VisitCallExpr(): {expr.Callee}({string.Join(", ", expr.Arguments)})");
             
@@ -330,7 +327,7 @@ namespace Lox
             return callable.Call(this, arguments);
         }
 
-        public object VisitGetExpr(Get expr)
+        public object? VisitGetExpr(Get expr)
         {
             if (_debug) Console.WriteLine($"VisitGetExpr(): {expr.Obj}.{expr.Name}");
             
@@ -404,7 +401,7 @@ namespace Lox
         /// </summary>
         /// <param name="stmt"></param>
         /// <returns></returns>
-        public object VisitBlockStmt(Block stmt)
+        public object? VisitBlockStmt(Block stmt)
         {
             if (_debug) Console.WriteLine("VisitBlockStmt()");
 
@@ -418,11 +415,11 @@ namespace Lox
         /// </summary>
         /// <param name="stmt"></param>
         /// <returns></returns>
-        public object VisitClassStmt(Class stmt)
+        public object? VisitClassStmt(Class stmt)
         {
             if (_debug) Console.WriteLine($"VisitClassStmt(): {stmt.Name}");
             
-            object superclass = null;
+            object? superclass = null;
             if (stmt.Superclass != null)
             {
                 superclass = Evaluate(stmt.Superclass);
@@ -447,11 +444,11 @@ namespace Lox
                 methods[method.Name.Lexeme] = function;
             }
 
-            var klass = new LoxClass(stmt.Name.Lexeme, (LoxClass)superclass, methods);
+            var klass = new LoxClass(stmt.Name.Lexeme, (LoxClass)superclass!, methods);
 
             if (superclass != null)
             {
-                _environment = _environment.Enclosing;
+                _environment = _environment.Enclosing!;
             }
 
             _environment.Assign(stmt.Name, klass);
@@ -463,7 +460,7 @@ namespace Lox
         /// Visit an expression statement node.
         /// </summary>
         /// <param name="stmt"></param>
-        public object VisitExpressionStmt(Expression stmt)
+        public object? VisitExpressionStmt(Expression stmt)
         {
             if (_debug) Console.WriteLine($"VisitExpressionStmt(): {stmt.Expr}");
 
@@ -477,7 +474,7 @@ namespace Lox
         /// </summary>
         /// <param name="stmt"></param>
         /// <returns></returns>
-        public object VisitFunctionStmt(Function stmt)
+        public object? VisitFunctionStmt(Function stmt)
         {
             if (_debug)
             {
@@ -495,7 +492,7 @@ namespace Lox
         /// </summary>
         /// <param name="stmt"></param>
         /// <returns></returns>
-        public object VisitIfStmt(If stmt)
+        public object? VisitIfStmt(If stmt)
         {
             if (_debug) Console.WriteLine($"VisitIfStmt(): {stmt.Condition} ? {stmt.ThenBranch} : {stmt.ElseBranch}");
             
@@ -515,7 +512,7 @@ namespace Lox
         /// Visit a print statement node.
         /// </summary>
         /// <param name="stmt"></param>
-        public object VisitPrintStmt(Print stmt)
+        public object? VisitPrintStmt(Print stmt)
         {
             if (_debug) Console.WriteLine($"VisitPrintStmt(): {stmt.Expr}");
 
@@ -531,17 +528,17 @@ namespace Lox
         /// <param name="stmt"></param>
         /// <returns></returns>
         /// <exception cref="ReturnException"></exception>
-        public object VisitReturnStmt(Return stmt)
+        public object? VisitReturnStmt(Return stmt)
         {
             if (_debug) Console.WriteLine($"VisitReturnStmt(): {stmt.Value}");
             
-            object value = null;
+            object? value = null;
             if (stmt.Value != null)
             {
                 value = Evaluate(stmt.Value);
             }
             
-            throw new ReturnException(value);
+            throw new ReturnException(value!);
         }
 
         /// <summary>
@@ -549,11 +546,11 @@ namespace Lox
         /// </summary>
         /// <param name="stmt"></param>
         /// <returns></returns>
-        public object VisitVarStmt(Var stmt)
+        public object? VisitVarStmt(Var stmt)
         {
             if (_debug) Console.WriteLine($"VisitVarStmt(): {stmt.Name}");
 
-            object value = null;
+            object? value = null;
             if (stmt.Initialiser != null)
             {
                 value = Evaluate(stmt.Initialiser);
@@ -569,7 +566,7 @@ namespace Lox
         /// </summary>
         /// <param name="stmt"></param>
         /// <returns></returns>
-        public object VisitWhileStmt(While stmt)
+        public object? VisitWhileStmt(While stmt)
         {
             
             if (_debug) Console.WriteLine($"VisitWhileStmt(): {stmt.Condition} {{ {stmt.Body} }}");
@@ -587,7 +584,7 @@ namespace Lox
         /// </summary>
         /// <param name="expr"></param>
         /// <returns></returns>
-        public object VisitAssignExpr(Assign expr)
+        public object? VisitAssignExpr(Assign expr)
         {
             if (_debug) Console.WriteLine($"VisitAssignExpr(): {expr.Name} = {expr.Value}");
 

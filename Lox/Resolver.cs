@@ -161,7 +161,7 @@
         /// </summary>
         /// <param name="stmt"></param>
         /// <returns></returns>
-        public object VisitBlockStmt(Block stmt)
+        public object? VisitBlockStmt(Block stmt)
         {
             BeginScope();
             Resolve(stmt.Statements);
@@ -175,7 +175,7 @@
         /// </summary>
         /// <param name="stmt"></param>
         /// <returns></returns>
-        public object VisitClassStmt(Class stmt)
+        public object? VisitClassStmt(Class stmt)
         {
             var enclosingClass = _currentClass;
             _currentClass = ClassType.CLASS;
@@ -232,7 +232,7 @@
         /// </summary>
         /// <param name="stmt"></param>
         /// <returns></returns>
-        public object VisitVarStmt(Var stmt)
+        public object? VisitVarStmt(Var stmt)
         {
             Declare(stmt.Name);
 
@@ -251,7 +251,7 @@
         /// </summary>
         /// <param name="expr"></param>
         /// <returns></returns>
-        public object VisitVariableExpr(Variable expr)
+        public object? VisitVariableExpr(Variable expr)
         {
             if (_scopes.Count != 0
                 && _scopes.Peek().TryGetValue(expr.Name.Lexeme, out var isDefined)
@@ -270,7 +270,7 @@
         /// </summary>
         /// <param name="expr"></param>
         /// <returns></returns>
-        public object VisitAssignExpr(Assign expr)
+        public object? VisitAssignExpr(Assign expr)
         {
             Resolve(expr.Value);
             ResolveLocal(expr, expr.Name);
@@ -283,7 +283,7 @@
         /// </summary>
         /// <param name="stmt"></param>
         /// <returns></returns>
-        public object VisitFunctionStmt(Function stmt)
+        public object? VisitFunctionStmt(Function stmt)
         {
             Declare(stmt.Name);
             Define(stmt.Name);
@@ -298,7 +298,7 @@
         /// </summary>
         /// <param name="stmt"></param>
         /// <returns></returns>
-        public object VisitExpressionStmt(Expression stmt)
+        public object? VisitExpressionStmt(Expression stmt)
         {
             Resolve(stmt.Expr);
 
@@ -310,7 +310,7 @@
         /// </summary>
         /// <param name="stmt"></param>
         /// <returns></returns>
-        public object VisitIfStmt(If stmt)
+        public object? VisitIfStmt(If stmt)
         {
             Resolve(stmt.Condition);
             Resolve(stmt.ThenBranch);
@@ -328,7 +328,7 @@
         /// </summary>
         /// <param name="stmt"></param>
         /// <returns></returns>
-        public object VisitPrintStmt(Print stmt)
+        public object? VisitPrintStmt(Print stmt)
         {
             Resolve(stmt.Expr);
 
@@ -340,7 +340,7 @@
         /// </summary>
         /// <param name="stmt"></param>
         /// <returns></returns>
-        public object VisitReturnStmt(Return stmt)
+        public object? VisitReturnStmt(Return stmt)
         {
             if (_currentFunction == FunctionType.NONE)
             {
@@ -365,7 +365,7 @@
         /// </summary>
         /// <param name="stmt"></param>
         /// <returns></returns>
-        public object VisitWhileStmt(While stmt)
+        public object? VisitWhileStmt(While stmt)
         {
             Resolve(stmt.Condition);
             Resolve(stmt.Body);
@@ -378,7 +378,7 @@
         /// </summary>
         /// <param name="expr"></param>
         /// <returns></returns>
-        public object VisitBinaryExpr(Binary expr)
+        public object? VisitBinaryExpr(Binary expr)
         {
             Resolve(expr.Left);
             Resolve(expr.Right);
@@ -391,7 +391,7 @@
         /// </summary>
         /// <param name="expr"></param>
         /// <returns></returns>
-        public object VisitCallExpr(Call expr)
+        public object? VisitCallExpr(Call expr)
         {
             Resolve(expr.Callee);
 
@@ -408,7 +408,7 @@
         /// </summary>
         /// <param name="expr"></param>
         /// <returns></returns>
-        public object VisitGetExpr(Get expr)
+        public object? VisitGetExpr(Get expr)
         {
             Resolve(expr.Obj);
             
@@ -420,7 +420,7 @@
         /// </summary>
         /// <param name="expr"></param>
         /// <returns></returns>
-        public object VisitGroupingExpr(Grouping expr)
+        public object? VisitGroupingExpr(Grouping expr)
         {
             Resolve(expr.Expression);
 
@@ -432,7 +432,7 @@
         /// </summary>
         /// <param name="expr"></param>
         /// <returns></returns>
-        public object VisitLiteralExpr(Literal expr)
+        public object? VisitLiteralExpr(Literal expr)
         {
             return null;
         }
@@ -442,7 +442,7 @@
         /// </summary>
         /// <param name="expr"></param>
         /// <returns></returns>
-        public object VisitLogicalExpr(Logical expr)
+        public object? VisitLogicalExpr(Logical expr)
         {
             Resolve(expr.Left);
             Resolve(expr.Right);
@@ -455,7 +455,7 @@
         /// </summary>
         /// <param name="expr"></param>
         /// <returns></returns>
-        public object VisitSetExpr(Set expr)
+        public object? VisitSetExpr(Set expr)
         {
             Resolve(expr.Value);
             Resolve(expr.Obj);
@@ -468,7 +468,7 @@
         /// </summary>
         /// <param name="expr"></param>
         /// <returns></returns>
-        public object VisitSuperExpr(Super expr)
+        public object? VisitSuperExpr(Super expr)
         {
             if (_currentClass == ClassType.NONE)
             {
@@ -489,7 +489,7 @@
         /// </summary>
         /// <param name="expr"></param>
         /// <returns></returns>
-        public object VisitThisExpr(This expr)
+        public object? VisitThisExpr(This expr)
         {
             if (_currentClass == ClassType.NONE)
             {
@@ -508,7 +508,7 @@
         /// </summary>
         /// <param name="expr"></param>
         /// <returns></returns>
-        public object VisitUnaryExpr(Unary expr)
+        public object? VisitUnaryExpr(Unary expr)
         {
             Resolve(expr.Right);
 
