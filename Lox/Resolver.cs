@@ -183,6 +183,24 @@
             Declare(stmt.Name);
             Define(stmt.Name);
 
+            if (stmt.Superclass != null
+                && stmt.Name.Lexeme == stmt.Superclass.Name.Lexeme)
+            {
+                Lox.Error(stmt.Superclass.Name, "A class cannot inherit from itself.");
+            }
+
+            if (stmt.Superclass != null)
+            {
+                _currentClass = ClassType.SUBCLASS;
+                Resolve(stmt.Superclass);
+            }
+
+            if (stmt.Superclass != null)
+            {
+                BeginScope();
+                _scopes.Peek()["super"] = true;
+            }
+
             BeginScope();
             _scopes.Peek()["this"] = true;
 
@@ -198,6 +216,11 @@
             }    
 
             EndScope();
+
+            if (stmt.Superclass != null)
+            {
+                EndScope();
+            }
 
             _currentClass = enclosingClass;
 
@@ -437,6 +460,27 @@
             Resolve(expr.Value);
             Resolve(expr.Obj);
             
+            return null;
+        }
+
+        /// <summary>
+        /// Visits a 'super' expression
+        /// </summary>
+        /// <param name="expr"></param>
+        /// <returns></returns>
+        public object VisitSuperExpr(Super expr)
+        {
+            if (_currentClass == ClassType.NONE)
+            {
+                Lox.Error(expr.Keyword, "Cannot use 'super' outside of a class.");
+            }
+            else if (_currentClass != ClassType.SUBCLASS)
+            {
+                Lox.Error(expr.Keyword, "Cannot use 'super' in a class with no superclass.");
+            }
+
+            ResolveLocal(expr, expr.Keyword);
+
             return null;
         }
 

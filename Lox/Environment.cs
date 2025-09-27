@@ -8,7 +8,7 @@
         /// <summary>
         /// The enclosing environment, if any.
         /// </summary>
-        private Environment? _enclosing;
+        public Environment? Enclosing;
 
         /// <summary>
         /// Initialises a new instance of the <see cref="Environment"/> class.
@@ -21,7 +21,7 @@
         /// <param name="environment"></param>
         public Environment(Environment environment)
         {
-            _enclosing = environment;
+            Enclosing = environment;
         }
 
         /// <summary>
@@ -29,7 +29,7 @@
         /// </summary>
         public Environment()
         {
-            _enclosing = null;
+            Enclosing = null;
         }
 
         /// <summary>
@@ -53,7 +53,7 @@
 
             for (var i = 0; i < distance; i++)
             {
-                environment = environment._enclosing;
+                environment = environment.Enclosing;
             }
             
             return environment;
@@ -72,9 +72,9 @@
                 return _values[name.Lexeme];
             }
 
-            if (_enclosing != null)
+            if (Enclosing != null)
             {
-                return _enclosing.Get(name);
+                return Enclosing.Get(name);
             }
 
             throw new RuntimeError(null, $"Undefined variable '{name.Lexeme}'.");
@@ -105,9 +105,9 @@
                 return;
             }
 
-            if (_enclosing != null)
+            if (Enclosing != null)
             {
-                _enclosing.Assign(token, value);
+                Enclosing.Assign(token, value);
                 return;
             }
 

@@ -70,6 +70,11 @@ namespace Lox
             T VisitSetExpr(Set expr);
 
             /// <summary>
+            /// Visit a <see cref="Super"/> expression node.
+            /// </summary>
+            T VisitSuperExpr(Super expr);
+
+            /// <summary>
             /// Visit a <see cref="This"/> expression node.
             /// </summary>
             T VisitThisExpr(This expr);
@@ -362,6 +367,40 @@ namespace Lox
         public override T Accept<T>(IVisitor<T> visitor)
         {
             return visitor.VisitSetExpr(this);
+        }
+    }
+
+    /// <summary>
+    /// Represents a Super expression in the abstract syntax tree (AST)
+    /// </summary>
+    public class Super : Expr
+    {
+        public Token Keyword;
+
+        public Token Method;
+
+        public Super(Token keyword, Token method)        {
+            Keyword = keyword;
+            Method = method;
+        }
+
+        /// <summary>
+        /// Accepts a visitor and dispatches the call to
+        /// <see cref="IVisitor{T}.VisitSuperExpr(Super)"/> so the visitor
+        /// can perform an operation specific to a Super node.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The return type produced by the visitor’s operation.
+        /// </typeparam>
+        /// <param name="visitor">
+        /// The visitor instance performing the operation.
+        /// </param>
+        /// <returns>
+        /// The result of the visitor’s operation.
+        /// </returns>
+        public override T Accept<T>(IVisitor<T> visitor)
+        {
+            return visitor.VisitSuperExpr(this);
         }
     }
 

@@ -6,7 +6,7 @@ namespace Lox
     /// <summary>
     /// Prints the AST in a readable format
     /// </summary>
-    public class AstPrinter : Expr.IVisitor<string>
+    public class AstPrinter : Expr.IVisitor<string>, Stmt.IVisitor<string>
     {
         /// <summary>
         /// Prints a binary expression
@@ -127,7 +127,167 @@ namespace Lox
         public string VisitThisExpr(This expr)
         {
             return "this";
-        }   
+        }
+
+        /// <summary>
+        /// Visits a 'super' expression
+        /// </summary>
+        /// <param name="expr"></param>
+        /// <returns></returns>
+        public string VisitSuperExpr(Super expr)
+        {
+            return Parenthesise2("super", expr.Method);
+        }
+
+        /// <summary>
+        /// Visits an block statement
+        /// </summary>
+        /// <param name="stmt"></param>
+        /// <returns></returns>
+        public string VisitBlockStmt(Block stmt)
+        {
+            var builder = new StringBuilder();
+            builder.Append("(block");
+
+            foreach (var statement in stmt.Statements)
+            {
+                builder.Append(" ");
+                builder.Append(statement.Accept(this));
+            }
+
+            builder.Append(")");
+
+            return builder.ToString();
+        }
+
+        /// <summary>
+        /// Visits an class statement
+        /// </summary>
+        /// <param name="stmt"></param>
+        /// <returns></returns>
+        public string VisitClassStmt(Class stmt)
+        {
+            var builder = new StringBuilder();
+            builder.Append("(class ").Append(stmt.Name.Lexeme);
+            
+            if (stmt.Superclass != null)
+            {
+                builder.Append(" < ").Append(stmt.Superclass.Name.Lexeme);
+            }
+            foreach (var method in stmt.Methods)
+            {
+                builder.Append(" ");
+                builder.Append(method.Accept(this));
+            }
+            
+            builder.Append(")");
+            
+            return builder.ToString();
+        }
+
+        /// <summary>
+        /// Visits an expression statement
+        /// </summary>
+        /// <param name="stmt"></param>
+        /// <returns></returns>
+        public string VisitExpressionStmt(Expression stmt)
+        {
+            return Parenthesise(";", stmt.Expr);
+        }
+
+        /// <summary>
+        /// Visits a function statement
+        /// </summary>
+        /// <param name="stmt"></param>
+        /// <returns></returns>
+        public string VisitFunctionStmt(Function stmt)
+        {
+            var builder = new StringBuilder();
+            builder.Append("(fun ").Append(stmt.Name.Lexeme).Append("(");
+
+            foreach(var param in stmt.Parameters)
+            {
+                if (param != stmt.Parameters[0])
+                {
+                    builder.Append(", ");
+                }
+
+                builder.Append(param.Lexeme);
+            }
+
+            builder.Append(")");
+
+            return builder.ToString();
+        }
+
+        /// <summary>
+        /// Visits a if statement
+        /// </summary>
+        /// <param name="stmt"></param>
+        /// <returns></returns>
+        public string VisitIfStmt(If stmt)
+        {
+            if (stmt.ElseBranch == null)
+            {
+                return Parenthesise2("if", stmt.Condition, stmt.ThenBranch);
+            }
+            else
+            {
+                return Parenthesise2("if-else", stmt.Condition, stmt.ThenBranch, stmt.ElseBranch);
+            }
+        }
+
+        /// <summary>
+        /// Visits a print statement
+        /// </summary>
+        /// <param name="stmt"></param>
+        /// <returns></returns>
+        public string VisitPrintStmt(Print stmt)
+        {
+            return Parenthesise("print", stmt.Expr);
+        }
+
+        /// <summary>
+        /// Visits a return statement
+        /// </summary>
+        /// <param name="stmt"></param>
+        /// <returns></returns>
+        public string VisitReturnStmt(Return stmt)
+        {
+            if (stmt.Value == null)
+            {
+                return "(return)";
+            }
+            else
+            {
+                return Parenthesise("return", stmt.Value);
+            }
+        }
+
+        /// <summary>
+        /// Visits a var statement
+        /// </summary>
+        /// <param name="stmt"></param>
+        /// <returns></returns>
+        public string VisitVarStmt(Var stmt)
+        {
+            if (stmt.Initialiser == null)
+            {
+                return Parenthesise2("var", stmt.Name);
+            }
+            
+            return Parenthesise2("var", stmt.Name, "=", stmt.Initialiser);
+        }
+
+        /// <summary>
+        /// Visits a while statement
+        /// </summary>
+        /// <param name="stmt"></param>
+        /// <returns></returns>
+        public string VisitWhileStmt(While stmt)
+        {
+            return Parenthesise2("while", stmt.Condition, stmt.Body);
+        }
 
         /// <summary>
         /// Parenthesises the expression
@@ -157,21 +317,47 @@ namespace Lox
         /// <param name="expr"></param>
         /// <param name="exprs"></param>
         /// <returns></returns>
-        private string Parenthesise2(string name, Expr expr, List<Expr> exprs)
+        private string Parenthesise2(string name, params object[] parts)
         {
             var builder = new StringBuilder();
-            builder.Append("(").Append(name).Append(" ");
-            builder.Append(expr.Accept(this));
-         
-            foreach (var e in exprs)
+            builder.Append("(").Append(name);
+            Transform(builder, parts);
+            builder.Append(")");
+
+            return builder.ToString();
+        }
+
+        /// <summary>
+        /// Transforms the expression to a string and writes it to the given writer
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="parts"></param>
+        private void Transform(StringBuilder builder, params object[] parts)
+        {
+            foreach (var part in parts)
             {
                 builder.Append(" ");
-                builder.Append(e.Accept(this));
-            
+                if (part is Expr expr)
+                {
+                    builder.Append(expr.Accept(this));
+                }
+                else if (part is Stmt stmt)
+                {
+                    builder.Append(stmt.Accept(this));   
+                }
+                else if (part is Token token)
+                {
+                    builder.Append(token.Lexeme);
+                }
+                else if (part is List<object> list)
+                {
+                    Transform(builder, list.ToList<object>());
+                }
+                else
+                {
+                    builder.Append(part.ToString());
+                }
             }
-            builder.Append(")");
-            
-            return builder.ToString();
         }
 
         /// <summary>

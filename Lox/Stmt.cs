@@ -115,10 +115,13 @@ namespace Lox
     {
         public Token Name;
 
+        public Variable Superclass;
+
         public List<Function> Methods;
 
-        public Class(Token name, List<Function> methods)        {
+        public Class(Token name, Variable superclass, List<Function> methods)        {
             Name = name;
+            Superclass = superclass;
             Methods = methods;
         }
 
