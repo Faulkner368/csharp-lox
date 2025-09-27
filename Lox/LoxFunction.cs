@@ -56,10 +56,33 @@
             }
             catch (ReturnException returnValue)
             {
+                if (_isInitialiser)
+                {
+                    return _closure.GetAt(0, "this");
+                }
+
                 return returnValue.Value;
             }
 
+            if (_isInitialiser)
+            {
+                return _closure.GetAt(0, "this");
+            }
+
             return null;
+        }
+
+        /// <summary>
+        /// Binds the function to an instance
+        /// </summary>
+        /// <param name="instance"></param>
+        /// <returns></returns>
+        public LoxFunction Bind(LoxInstance instance)
+        {
+            var environment = new Environment(_closure);
+            environment.Define("this", instance);
+            
+            return new LoxFunction(_declaration, environment, _isInitialiser);
         }
 
         /// <summary>

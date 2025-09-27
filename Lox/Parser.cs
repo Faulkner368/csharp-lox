@@ -729,6 +729,11 @@ namespace Lox
                 return new Literal(Previous().Literal);
             }
 
+            if (Match(THIS))
+            {
+                return new This(Previous());
+            }    
+
             if (Match(IDENTIFIER))
             {
                 return new Variable(Previous());

@@ -70,6 +70,11 @@ namespace Lox
             T VisitSetExpr(Set expr);
 
             /// <summary>
+            /// Visit a <see cref="This"/> expression node.
+            /// </summary>
+            T VisitThisExpr(This expr);
+
+            /// <summary>
             /// Visit a <see cref="Unary"/> expression node.
             /// </summary>
             T VisitUnaryExpr(Unary expr);
@@ -357,6 +362,37 @@ namespace Lox
         public override T Accept<T>(IVisitor<T> visitor)
         {
             return visitor.VisitSetExpr(this);
+        }
+    }
+
+    /// <summary>
+    /// Represents a This expression in the abstract syntax tree (AST)
+    /// </summary>
+    public class This : Expr
+    {
+        public Token Keyword;
+
+        public This(Token keyword)        {
+            Keyword = keyword;
+        }
+
+        /// <summary>
+        /// Accepts a visitor and dispatches the call to
+        /// <see cref="IVisitor{T}.VisitThisExpr(This)"/> so the visitor
+        /// can perform an operation specific to a This node.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The return type produced by the visitor’s operation.
+        /// </typeparam>
+        /// <param name="visitor">
+        /// The visitor instance performing the operation.
+        /// </param>
+        /// <returns>
+        /// The result of the visitor’s operation.
+        /// </returns>
+        public override T Accept<T>(IVisitor<T> visitor)
+        {
+            return visitor.VisitThisExpr(this);
         }
     }
 

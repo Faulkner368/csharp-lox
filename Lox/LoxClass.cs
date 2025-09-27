@@ -11,12 +11,33 @@
         public readonly string Name;
 
         /// <summary>
+        /// The methods of the class
+        /// </summary>
+        private readonly Dictionary<string, LoxFunction> _methods;
+
+        /// <summary>
         /// Creates a new Lox class
         /// </summary>
         /// <param name="name"></param>
-        public LoxClass(string name)
+        public LoxClass(string name, Dictionary<string, LoxFunction> methods)
         {
             Name = name;
+            _methods = methods;
+        }
+
+        /// <summary>
+        /// Finds a method on the class
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public LoxFunction FindMethod(string name)
+        {
+            if (_methods.ContainsKey(name))
+            {
+                return _methods[name];
+            }
+
+            return null;
         }
 
         /// <inheritdoc/>
@@ -28,14 +49,25 @@
         /// <inheritdoc/>
         public int Arity()
         {
-            return 0;
+            var initialiser = FindMethod("init");
+            if (initialiser == null)
+            {
+                return 0;
+            }
+
+            return initialiser.Arity();
         }
 
         /// <inheritdoc/>
         public object? Call(Interpreter interpreter, List<object> arguments)
         {
             var instance = new LoxInstance(this);
-            
+            var initialiser = FindMethod("init");
+            if (initialiser != null)
+            {
+                initialiser.Bind(instance).Call(interpreter, arguments);
+            }
+
             return instance;
         }
     }

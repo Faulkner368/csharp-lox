@@ -118,6 +118,12 @@ namespace Lox
             return Evaluate(expr.Right);
         }
 
+        /// <summary>
+        /// Visit a set expression node.
+        /// </summary>
+        /// <param name="expr"></param>
+        /// <returns></returns>
+        /// <exception cref="RuntimeError"></exception>
         public object VisitSetExpr(Set expr)
         {
             if (_debug) Console.WriteLine($"VisitSetExpr(): {expr.Obj}.{expr.Name} = {expr.Value}");
@@ -133,6 +139,18 @@ namespace Lox
             instance.Set(expr.Name, value);
             
             return value;
+        }
+
+        /// <summary>
+        /// Visit a 'this' expression node.
+        /// </summary>
+        /// <param name="expr"></param>
+        /// <returns></returns>
+        public object VisitThisExpr(This expr)
+        {
+            if (_debug) Console.WriteLine($"VisitThisExpr(): {expr.Keyword}");
+            
+            return LookUpVariable(expr.Keyword, expr);
         }
 
         /// <summary>
@@ -381,7 +399,15 @@ namespace Lox
             if (_debug) Console.WriteLine($"VisitClassStmt(): {stmt.Name}");
             
            _environment.Define(stmt.Name.Lexeme, null);
-            var klass = new LoxClass(stmt.Name.Lexeme);
+
+            var methods = new Dictionary<string, LoxFunction>();
+            foreach (var method in stmt.Methods)
+            {
+                var function = new LoxFunction(method, _environment, method.Name.Lexeme == "init");
+                methods[method.Name.Lexeme] = function;
+            }
+
+            var klass = new LoxClass(stmt.Name.Lexeme, methods);
             _environment.Assign(stmt.Name, klass);
 
             return null;
@@ -411,7 +437,7 @@ namespace Lox
             {
                 Console.WriteLine($"VisitFunctionStmt(): {stmt.Name}({string.Join(", ", stmt.Parameters)}) {{ ... }}");
             }
-            
+
             var function = new LoxFunction(stmt, _environment, false);
             _environment.Define(stmt.Name.Lexeme, function);
             

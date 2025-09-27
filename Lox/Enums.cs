@@ -60,6 +60,18 @@
     public enum FunctionType
     {
         NONE,
-        FUNCTION
+        FUNCTION,
+        INITIALISER,
+        METHOD
+    }
+
+    /// <summary>
+    /// The type of class we are currently resolving
+    /// </summary>
+    public enum ClassType
+    {
+        NONE,
+        CLASS,
+        SUBCLASS
     }
 }

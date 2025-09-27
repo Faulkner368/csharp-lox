@@ -120,6 +120,16 @@ namespace Lox
         }
 
         /// <summary>
+        /// Visits a 'this' expression
+        /// </summary>
+        /// <param name="expr"></param>
+        /// <returns></returns>
+        public string VisitThisExpr(This expr)
+        {
+            return "this";
+        }   
+
+        /// <summary>
         /// Parenthesises the expression
         /// </summary>
         /// <param name="name"></param>

@@ -36,7 +36,13 @@
             {
                 return value;
             }
-            
+
+            var method = _klass.FindMethod(name.Lexeme);
+            if (method != null)
+            {
+                return method.Bind(this);
+            }
+
             throw new RuntimeError(name, $"Undefined property '{name.Lexeme}'.");
         }
 

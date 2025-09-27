@@ -21,6 +21,11 @@
         private FunctionType _currentFunction = FunctionType.NONE;
 
         /// <summary>
+        /// The type of class currently being resolved
+        /// </summary>
+        private ClassType _currentClass = ClassType.NONE;
+
+        /// <summary>
         /// Creates a new resolver
         /// </summary>
         /// <param name="interpreter"></param>
@@ -172,8 +177,29 @@
         /// <returns></returns>
         public object VisitClassStmt(Class stmt)
         {
+            var enclosingClass = _currentClass;
+            _currentClass = ClassType.CLASS;
+
             Declare(stmt.Name);
             Define(stmt.Name);
+
+            BeginScope();
+            _scopes.Peek()["this"] = true;
+
+            foreach (var method  in stmt.Methods)
+            {
+                var declaration = FunctionType.METHOD;
+                if (method.Name.Lexeme == "init")
+                {
+                    declaration = FunctionType.INITIALISER;
+                }
+
+                ResolveFunction(method, declaration);
+            }    
+
+            EndScope();
+
+            _currentClass = enclosingClass;
 
             return null;
         }
@@ -300,6 +326,11 @@
 
             if (stmt.Value != null)
             {
+                if (_currentFunction == FunctionType.INITIALISER)
+                {
+                    Lox.Error(stmt.Keyword, "Cannot return a value from an initialiser.");
+                }
+
                 Resolve(stmt.Value);
             }
 
@@ -405,6 +436,25 @@
         {
             Resolve(expr.Value);
             Resolve(expr.Obj);
+            
+            return null;
+        }
+
+        /// <summary>
+        /// Visits a 'this' expression
+        /// </summary>
+        /// <param name="expr"></param>
+        /// <returns></returns>
+        public object VisitThisExpr(This expr)
+        {
+            if (_currentClass == ClassType.NONE)
+            {
+                Lox.Error(expr.Keyword, "Cannot use 'this' outside of a class.");
+                
+                return null;
+            }
+
+            ResolveLocal(expr, expr.Keyword);
             
             return null;
         }
