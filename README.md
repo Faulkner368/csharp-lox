@@ -25,6 +25,7 @@ This implementation includes:
 
 ## 📂 Project Structure
 
+```
 Lox.sln
 ├── Lox/
 │   ├── AstPrinter.cs
@@ -54,7 +55,8 @@ Lox.sln
 └── Lox.Tests/
     ├── Lox.Tests.csproj
     ├── TestHelper.cs
-    └── UnitTests.cs
+    └── InterpreterTests.cs
+```
 
 ---
 
