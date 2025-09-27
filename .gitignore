@@ -3,3 +3,6 @@ Lox/bin/*
 Lox/obj/*
 Tools/bin/*
 Tools/obj/*
+
+Lox.Tests/bin/*
+Lox.Tests/obj/*

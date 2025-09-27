@@ -187,7 +187,8 @@ namespace Lox
 
         public List<Stmt> Body;
 
-        public Function(Token name, List<Token> parameters, List<Stmt> body)        {
+        public Function(Token name, List<Token> parameters, List<Stmt> body)
+        {
             Name = name;
             Parameters = parameters;
             Body = body;

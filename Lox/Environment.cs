@@ -13,7 +13,7 @@
         /// <summary>
         /// Initialises a new instance of the <see cref="Environment"/> class.
         /// </summary>
-        private readonly Dictionary<string, object> _values = new();
+        private readonly Dictionary<string, object?> _values = new();
 
         /// <summary>
         /// Creates a new environment that encloses the given environment.
@@ -39,7 +39,7 @@
         /// <param name="value"></param>
         public void Define(string name, object? value)
         {
-            _values[name] = value!;
+            _values[name] = value;
         }
 
         /// <summary>
@@ -65,7 +65,7 @@
         /// <param name="name"></param>
         /// <returns></returns>
         /// <exception cref="RuntimeError"></exception>
-        public object Get(Token name)
+        public object? Get(Token name)
         {
             if (_values.ContainsKey(name.Lexeme))
             {
@@ -77,7 +77,7 @@
                 return Enclosing.Get(name);
             }
 
-            throw new RuntimeError(null, $"Undefined variable '{name.Lexeme}'.");
+            throw new RuntimeError(name, $"Undefined variable '{name.Lexeme}'.");
         }
 
         /// <summary>

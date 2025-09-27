@@ -64,45 +64,6 @@ namespace Lox
         }
 
         /// <summary>
-        /// Runs an interactive prompt
-        /// </summary>
-        private static void RunPrompt()
-        {
-            TextReader input = Console.In;
-            
-            for (;;)
-            {
-                _hadError = false;
-
-                Console.WriteLine("> ");
-                var scanner = new Scanner(input.ReadLine() ?? "");
-                var tokens = scanner.ScanTokens();
-
-                var parser = new Parser(tokens);
-                object syntax = parser.ParseRepl();
-
-                if (_hadError || syntax == null)
-                {
-                    continue;
-                }
-
-                if (syntax is List<Stmt> list)
-                {
-                    _interpreter.Interpret((List<Stmt>)syntax);
-                }
-                else if (syntax is Expr expr)
-                {
-                    var result = _interpreter.Interpret((Expr)syntax);
-
-                    if (result != null)
-                    {
-                        Console.WriteLine($"= {result}");
-                    }
-                }
-            }
-        }
-
-        /// <summary>
         /// Runs the given source code
         /// </summary>
         /// <param name="source"></param>
@@ -127,6 +88,60 @@ namespace Lox
             }
 
             _interpreter.Interpret(statements);
+        }
+
+        /// <summary>
+        /// Runs an interactive prompt
+        /// </summary>
+        private static void RunPrompt()
+        {
+            TextReader input = Console.In;
+
+            for (; ; )
+            {
+                _hadError = false;
+
+                Console.Write("> ");
+
+                var line = input.ReadLine();
+                if (line == null)
+                {
+                    break;
+                }
+
+                var scanner = new Scanner(line);
+                var tokens = scanner.ScanTokens();
+
+                var parser = new Parser(tokens);
+                object syntax = parser.ParseRepl();
+
+                if (_hadError || syntax == null)
+                {
+                    continue;
+                }
+
+                var resolver = new Resolver(_interpreter);
+
+                if (_hadError)
+                {
+                    return;
+                }
+
+                if (syntax is List<Stmt> list)
+                {
+                    resolver.Resolve((List<Stmt>)syntax);
+                    _interpreter.Interpret((List<Stmt>)syntax);
+                }
+                else if (syntax is Expr expr)
+                {
+                    var result = _interpreter.Interpret((Expr)syntax);
+
+                    if (result != null)
+                    {
+                        Console.WriteLine($"= {result}");
+                    }
+                }
+            }
         }
 
         /// <summary>

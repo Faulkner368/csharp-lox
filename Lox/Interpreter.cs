@@ -225,7 +225,13 @@ namespace Lox
             return LookUpVariable(expr.Name, expr);
         }
 
-        private object LookUpVariable(Token name, Expr expr)
+        /// <summary>
+        /// Looks up the value of a variable in the appropriate environment.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="expr"></param>
+        /// <returns></returns>
+        private object? LookUpVariable(Token name, Expr expr)
         {
             if (_locals.TryGetValue(expr, out int distance))
             {
@@ -311,7 +317,6 @@ namespace Lox
             foreach (var argument in expr.Arguments)
             {
                 arguments.Add(Evaluate(argument));
-            
             }
             
             if (callee is not ILoxCallable callable)
@@ -686,6 +691,11 @@ namespace Lox
             if (obj == null)
             {
                 return "nil";
+            }
+
+            if (obj is bool b)
+            {
+                return b ? "true" : "false";
             }
 
             if (obj is double d)
